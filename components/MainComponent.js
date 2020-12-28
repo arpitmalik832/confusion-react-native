@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
+import { StyleSheet, View } from 'react-native'
 import Menu from './MenuComponent'
+import DishDetail from './DishDetailComponent'
 import { DISHES } from '../shared/dishes'
 
 class Main extends Component {
@@ -7,15 +9,29 @@ class Main extends Component {
         super(props)
 
         this.state = {
-            dishes: DISHES
+            dishes: DISHES,
+            selectedDish: null
         }
+    }
+
+    onDishSelect(dishId) {
+        this.setState({
+            selectedDish: dishId
+        })
     }
 
     render() {
         return (
-            <Menu dishes={this.state.dishes} />
+            <View>
+                <Menu dishes={this.state.dishes} onPress={dishId => this.onDishSelect(dishId)}/>
+                <DishDetail dish={this.state.dishes.filter(dish => dish.id === this.state.selectedDish)[0]} />
+            </View>
         );
     }
 }
+
+const styles = StyleSheet.create({
+    
+})
 
 export default Main

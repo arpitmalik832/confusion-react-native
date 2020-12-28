@@ -1,11 +1,11 @@
 import React from 'react'
-import { FlatList } from 'react-native'
-import { Avatar, Icon, ListItem } from 'react-native-elements'
+import { StyleSheet, FlatList } from 'react-native'
+import { Avatar, ListItem } from 'react-native-elements'
 
 function Menu(props) {
     const renderMenuItem = ({ item, index }) => {
         return (
-            <ListItem key={index} bottomDivider>
+            <ListItem key={index} bottomDivider onPress={() => props.onPress(index)}>
                 <Avatar rounded title={item.name} source={require('./images/uthappizza.png')} />
                 <ListItem.Content>
                     <ListItem.Title>{item.name}</ListItem.Title>
@@ -19,5 +19,9 @@ function Menu(props) {
         <FlatList data={props.dishes} renderItem={renderMenuItem} keyExtractor={item => item.id.toString()} />
     )
 }
+
+const styles = StyleSheet.create({
+    
+})
 
 export default Menu
