@@ -1,37 +1,58 @@
-import React, { Component } from 'react'
-import { StyleSheet, View } from 'react-native'
+import React from 'react'
+import { StyleSheet } from 'react-native'
 import Menu from './MenuComponent'
 import DishDetail from './DishDetailComponent'
-import { DISHES } from '../shared/dishes'
+import { createStackNavigator } from '@react-navigation/stack'
+import { NavigationContainer } from '@react-navigation/native'
 
-class Main extends Component {
-    constructor(props) {
-        super(props)
+const Stack = createStackNavigator()
 
-        this.state = {
-            dishes: DISHES,
-            selectedDish: null
-        }
-    }
+const MenuNavigator = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName='Menu'
+      headerMode='screen'
+      screenOptions={{ 
+        headerStyle: styles.navigatorHeader,
+        headerTintColor: '#fff',
+        headerTitleAlign: 'left',
+        headerTitleStyle: styles.navigatorHeaderTitle
+      }}
+    >
+      <Stack.Screen 
+          name='Menu' 
+          component={Menu} 
+          options={{
+              title: 'Dish'
+          }}
+      />
+      <Stack.Screen 
+          name='Dish' 
+          component={DishDetail} 
+          options={{
+              title: 'Dish Details'
+          }}
+      />
+    </Stack.Navigator>
+  )
+}
 
-    onDishSelect(dishId) {
-        this.setState({
-            selectedDish: dishId
-        })
-    }
-
-    render() {
-        return (
-            <View>
-                <Menu dishes={this.state.dishes} onPress={dishId => this.onDishSelect(dishId)}/>
-                <DishDetail dish={this.state.dishes.filter(dish => dish.id === this.state.selectedDish)[0]} />
-            </View>
-        );
-    }
+const Main = (props) => {
+  return (
+    <NavigationContainer>
+     <MenuNavigator />
+    </NavigationContainer>
+  );
 }
 
 const styles = StyleSheet.create({
-    
+  navigatorHeader: {
+    backgroundColor: '#512DA8' 
+  },
+  navigatorHeaderTitle: {  
+    color: '#fff',
+    fontWeight: 'bold'
+  }
 })
 
 export default Main
