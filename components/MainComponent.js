@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, Platform } from 'react-native'
+import { Icon } from 'react-native-elements'
 import Home from './HomeComponent'
 import Menu from './MenuComponent'
 import DishDetail from './DishDetailComponent'
@@ -25,15 +26,29 @@ const MenuNavigator = () => {
       <Stack.Screen 
           name='Menu' 
           component={Menu} 
-          options={{
-            title: 'Menu'
+          options={(props) => {
+            return ({
+              title: 'Menu',
+              headerLeft: () => {
+                return (
+                  <Icon
+                    name="menu"
+                    color="#fff"
+                    containerStyle={[styles.navigatorHeaderLeft]}
+                    onPress={() => props.navigation.openDrawer()}
+                  />
+                )
+              }
+            })
           }}
       />
       <Stack.Screen 
           name='Dish' 
           component={DishDetail} 
-          options={{
-            title: 'Dish Details'
+          options={(props) => {
+            return ({
+              title: 'Dish Details'
+            })
           }}
       />
     </Stack.Navigator>
@@ -55,8 +70,20 @@ const HomeNavigator = () => {
       <Stack.Screen
         name='Home'
         component={Home}
-        options={{
-          title: 'Home'
+        options={(props) => {
+          return ({
+            title: 'Home',
+            headerLeft: () => {
+              return (
+                <Icon 
+                  name="menu"
+                  color="#fff"
+                  containerStyle={[styles.navigatorHeaderLeft]}
+                  onPress={() => props.navigation.openDrawer()} 
+                />
+              )
+            }
+          })
         }}
       />
     </Stack.Navigator>
@@ -109,6 +136,9 @@ const styles = StyleSheet.create({
   navigatorHeaderTitle: {  
     color: '#fff',
     fontWeight: 'bold'
+  },
+  navigatorHeaderLeft: {
+    paddingLeft: 15
   }
 })
 
