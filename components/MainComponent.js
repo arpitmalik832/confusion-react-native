@@ -1,11 +1,14 @@
 import React from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Platform } from 'react-native'
+import Home from './HomeComponent'
 import Menu from './MenuComponent'
 import DishDetail from './DishDetailComponent'
-import { createStackNavigator } from '@react-navigation/stack'
 import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+import { createDrawerNavigator } from '@react-navigation/drawer'
 
 const Stack = createStackNavigator()
+const Drawer = createDrawerNavigator()
 
 const MenuNavigator = () => {
   return (
@@ -13,41 +16,95 @@ const MenuNavigator = () => {
       initialRouteName='Menu'
       headerMode='screen'
       screenOptions={{ 
-        headerStyle: styles.navigatorHeader,
+        headerStyle: [styles.navigatorHeader],
         headerTintColor: '#fff',
         headerTitleAlign: 'left',
-        headerTitleStyle: styles.navigatorHeaderTitle
+        headerTitleStyle: [styles.navigatorHeaderTitle]
       }}
     >
       <Stack.Screen 
           name='Menu' 
           component={Menu} 
           options={{
-              title: 'Dish'
+            title: 'Menu'
           }}
       />
       <Stack.Screen 
           name='Dish' 
           component={DishDetail} 
           options={{
-              title: 'Dish Details'
+            title: 'Dish Details'
           }}
       />
     </Stack.Navigator>
   )
 }
 
+const HomeNavigator = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName='Home'
+      headerMode='screen'
+      screenOptions={{
+        headerStyle: [styles.navigatorHeader],
+        headerTintColor: '#fff',
+        headerTitleAlign: 'left',
+        headerTitleStyle: [styles.navigatorHeaderTitle]
+      }}
+    >
+      <Stack.Screen
+        name='Home'
+        component={Home}
+        options={{
+          title: 'Home'
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
+
+const MainNavigator = () => {
+  return (
+    <Drawer.Navigator
+      initialRouteName='HomeNavigator'
+      drawerPosition='left'
+      drawerStyle={[styles.drawer]}
+    >
+      <Drawer.Screen
+        name='HomeNavigator'
+        component={HomeNavigator}
+        options={{
+          title: 'HomeNavigator',
+          drawerLabel: 'Home'
+        }}
+      />
+      <Drawer.Screen
+        name='MenuNavigator'
+        component={MenuNavigator}
+        options={{
+          title: 'MenuNavigator',
+          drawerLabel: 'Menu'
+        }}
+      />  
+    </Drawer.Navigator>
+  )
+}
+
 const Main = (props) => {
   return (
     <NavigationContainer>
-     <MenuNavigator />
+      <MainNavigator />
     </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  drawer: {
+    backgroundColor: '#D1C4E9'
+  },
   navigatorHeader: {
-    backgroundColor: '#512DA8' 
+    height: Platform.OS === 'ios' ? 0 : 60,
+    backgroundColor: '#512DA8'
   },
   navigatorHeaderTitle: {  
     color: '#fff',

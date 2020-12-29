@@ -23,7 +23,7 @@ class Menu extends Component {
         >
           <Avatar 
             rounded 
-            title={item.name} 
+            size='large'
             source={require('./images/uthappizza.png')} 
           />
           <ListItem.Content>
