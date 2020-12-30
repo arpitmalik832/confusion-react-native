@@ -27,10 +27,14 @@ class Menu extends Component {
             source={require('./images/uthappizza.png')} 
           />
           <ListItem.Content>
-            <ListItem.Title>
+            <ListItem.Title
+              style={[styles.listItemTitle]}
+            >
               {item.name}
             </ListItem.Title>
-            <ListItem.Subtitle>
+            <ListItem.Subtitle
+              style={[styles.listItemSubtitle]}
+            >
               {item.description}
             </ListItem.Subtitle>
           </ListItem.Content>
@@ -49,7 +53,12 @@ class Menu extends Component {
 }
 
 const styles = StyleSheet.create({
-    
+  listItemTitle: {
+    fontWeight: 'bold'
+  },
+  listItemSubtitle: {
+    color: '#000' 
+  }
 })
 
 export default Menu

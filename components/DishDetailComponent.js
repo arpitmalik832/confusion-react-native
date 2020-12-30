@@ -61,7 +61,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10
   },
   cardDescription: {
-    margin: 10
+    padding: 10,
+    paddingLeft: 20,
+    paddingRight: 20
   } 
 })
 

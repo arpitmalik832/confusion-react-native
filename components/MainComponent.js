@@ -7,6 +7,8 @@ import DishDetail from './DishDetailComponent'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { createDrawerNavigator } from '@react-navigation/drawer'
+import Contact from './ContactComponent'
+import About from './AboutComponent'
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
@@ -90,6 +92,76 @@ const HomeNavigator = () => {
   )
 }
 
+const ContactNavigator = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName='Contact'
+      headerMode='screen'
+      screenOptions={{
+        headerStyle: [styles.navigatorHeader],
+        headerTintColor: '#fff',
+        headerTitleAlign: 'left',
+        headerTitleStyle: [styles.navigatorHeaderTitle]
+      }}
+    >
+      <Stack.Screen
+        name='Contact'
+        component={Contact}
+        options={(props) => {
+          return ({
+            title: '',
+            headerLeft: () => {
+              return (
+                <Icon 
+                  name="menu"
+                  color="#fff"
+                  containerStyle={[styles.navigatorHeaderLeft]}
+                  onPress={() => props.navigation.openDrawer()} 
+                />
+              )
+            }
+          })
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
+
+const AboutNavigator = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName='About'
+      headerMode='screen'
+      screenOptions={{
+        headerStyle: [styles.navigatorHeader],
+        headerTintColor: '#fff',
+        headerTitleAlign: 'left',
+        headerTitleStyle: [styles.navigatorHeaderTitle]
+      }}
+    >
+      <Stack.Screen
+        name='About'
+        component={About}
+        options={(props) => {
+          return ({
+            title: 'About Us',
+            headerLeft: () => {
+              return (
+                <Icon 
+                  name="menu"
+                  color="#fff"
+                  containerStyle={[styles.navigatorHeaderLeft]}
+                  onPress={() => props.navigation.openDrawer()} 
+                />
+              )
+            }
+          })
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
+
 const MainNavigator = () => {
   return (
     <Drawer.Navigator
@@ -106,11 +178,27 @@ const MainNavigator = () => {
         }}
       />
       <Drawer.Screen
+        name='AboutNavigator'
+        component={AboutNavigator}
+        options={{
+          title: 'AboutNavigator',
+          drawerLabel: 'About Us'
+        }}
+      />
+      <Drawer.Screen
         name='MenuNavigator'
         component={MenuNavigator}
         options={{
           title: 'MenuNavigator',
           drawerLabel: 'Menu'
+        }}
+      />  
+      <Drawer.Screen
+        name='ContactNavigator'
+        component={ContactNavigator}
+        options={{
+          title: 'ContactNavigator',
+          drawerLabel: 'Contact Us'
         }}
       />  
     </Drawer.Navigator>
