@@ -14,11 +14,9 @@ function RenderDish(props) {
           source={require('./images/uthappizza.png')} 
           style={[styles.cardImage]}
         >
-          <Card.Title 
-            style={[styles.cardTitle]}
-          >
+          <Card.FeaturedTitle>
             {dish.name}
-          </Card.Title>    
+          </Card.FeaturedTitle>    
         </Card.Image>
         <Text 
           style={[styles.cardDescription]}
@@ -56,11 +54,9 @@ const styles = StyleSheet.create({
     padding: 0, 
     borderRadius: 10 
   },
-  cardTitle: {
-    color: '#fff'
-  },
   cardImage: {
     justifyContent: 'center',
+    alignItems: 'center',
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10
   },
