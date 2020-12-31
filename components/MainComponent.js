@@ -1,12 +1,12 @@
 import React from 'react'
-import { StyleSheet, Platform } from 'react-native'
+import { StyleSheet, Platform, View, Text, Image } from 'react-native'
 import { Icon } from 'react-native-elements'
 import Home from './HomeComponent'
 import Menu from './MenuComponent'
 import DishDetail from './DishDetailComponent'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
-import { createDrawerNavigator } from '@react-navigation/drawer'
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer'
 import Contact from './ContactComponent'
 import About from './AboutComponent'
 
@@ -35,9 +35,10 @@ const MenuNavigator = () => {
                 return (
                   <Icon
                     name="menu"
+                    size={24}
                     color="#fff"
                     containerStyle={[styles.navigatorHeaderLeft]}
-                    onPress={() => props.navigation.openDrawer()}
+                    onPress={() => props.navigation.toggleDrawer()}
                   />
                 )
               }
@@ -79,9 +80,10 @@ const HomeNavigator = () => {
               return (
                 <Icon 
                   name="menu"
+                  size={24}
                   color="#fff"
                   containerStyle={[styles.navigatorHeaderLeft]}
-                  onPress={() => props.navigation.openDrawer()} 
+                  onPress={() => props.navigation.toggleDrawer()}
                 />
               )
             }
@@ -114,9 +116,10 @@ const ContactNavigator = () => {
               return (
                 <Icon 
                   name="menu"
+                  size={24}
                   color="#fff"
                   containerStyle={[styles.navigatorHeaderLeft]}
-                  onPress={() => props.navigation.openDrawer()} 
+                  onPress={() => props.navigation.toggleDrawer()}
                 />
               )
             }
@@ -149,9 +152,10 @@ const AboutNavigator = () => {
               return (
                 <Icon 
                   name="menu"
+                  size={24}
                   color="#fff"
                   containerStyle={[styles.navigatorHeaderLeft]}
-                  onPress={() => props.navigation.openDrawer()} 
+                  onPress={() => props.navigation.toggleDrawer()}
                 />
               )
             }
@@ -162,19 +166,64 @@ const AboutNavigator = () => {
   )
 }
 
+const CustomDrawerContentComponent = (props) => {
+  return (
+    <DrawerContentScrollView 
+      {...props}
+      style={[styles.flex1]} 
+    >
+      <View 
+        style={[styles.drawerHeader]}
+      >
+        <View 
+          style={[styles.flex1]}
+        >
+          <Image
+            source={require('./images/logo.png')}
+            style={[styles.drawerLogo]}
+          />
+        </View>
+        <View 
+          style={[styles.flex2]}
+        >
+          <Text
+            style={[styles.drawerHeaderText]}
+          >
+            Ristorante Con Fusion
+          </Text>
+        </View>
+      </View>
+      <DrawerItemList 
+        {...props}
+      />
+    </DrawerContentScrollView>
+  )
+}
+
 const MainNavigator = () => {
   return (
     <Drawer.Navigator
       initialRouteName='HomeNavigator'
       drawerPosition='left'
       drawerStyle={[styles.drawer]}
+      drawerContent={CustomDrawerContentComponent}
     >
       <Drawer.Screen
         name='HomeNavigator'
         component={HomeNavigator}
         options={{
           title: 'HomeNavigator',
-          drawerLabel: 'Home'
+          drawerLabel: 'Home',
+          drawerIcon: ({ tintColor }) => {
+            return (
+              <Icon 
+                name="home"
+                type="font-awesome"
+                size={24}
+                color={tintColor}
+              />
+            )
+          }
         }}
       />
       <Drawer.Screen
@@ -182,7 +231,17 @@ const MainNavigator = () => {
         component={AboutNavigator}
         options={{
           title: 'AboutNavigator',
-          drawerLabel: 'About Us'
+          drawerLabel: 'About Us',
+          drawerIcon: ({ tintColor }) => {
+            return (
+              <Icon 
+                name="info-circle"
+                type="font-awesome"
+                size={24}
+                color={tintColor}
+              />
+            )
+          }
         }}
       />
       <Drawer.Screen
@@ -190,7 +249,17 @@ const MainNavigator = () => {
         component={MenuNavigator}
         options={{
           title: 'MenuNavigator',
-          drawerLabel: 'Menu'
+          drawerLabel: 'Menu',
+          drawerIcon: ({ tintColor }) => {
+            return (
+              <Icon 
+                name="list"
+                type="font-awesome"
+                size={24}
+                color={tintColor}
+              />
+            )
+          }
         }}
       />  
       <Drawer.Screen
@@ -198,7 +267,17 @@ const MainNavigator = () => {
         component={ContactNavigator}
         options={{
           title: 'ContactNavigator',
-          drawerLabel: 'Contact Us'
+          drawerLabel: 'Contact Us',
+          drawerIcon: ({ tintColor }) => {
+            return (
+              <Icon 
+                name="address-card"
+                type="font-awesome"
+                size={22}
+                color={tintColor}
+              />
+            )
+          }
         }}
       />  
     </Drawer.Navigator>
@@ -214,8 +293,32 @@ const Main = (props) => {
 }
 
 const styles = StyleSheet.create({
+  flex1: {
+    flex: 1
+  },
+  flex2: {
+    flex: 2
+  },
   drawer: {
     backgroundColor: '#D1C4E9'
+  },
+  drawerLogo: {
+    margin: 10,
+    width: 80,
+    height: 60
+  },
+  drawerHeader: {
+    backgroundColor: '#512DA8',
+    minHeight: 140,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    flexDirection: 'row',
+  },
+  drawerHeaderText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: 'bold'
   },
   navigatorHeader: {
     height: Platform.OS === 'ios' ? 0 : 60,
