@@ -18,20 +18,18 @@ function RenderDish(props) {
           <Card.FeaturedTitle>
             {dish.name}
           </Card.FeaturedTitle>    
+          <Icon
+            name={ props.favorite ? 'heart' : 'heart-o' }
+            type='font-awesome'
+            color='#0FF'
+            onPress={() => props.favorite ? props.unMarkFavorite() : props.markFavorite()}
+          />
         </Card.Image>
         <Text 
           style={[styles.cardDescription]}
         >
           {dish.description}
         </Text>
-        <Icon
-          raised
-          reverse
-          name={ props.favorite ? 'heart' : 'heart-o' }
-          type='font-awesome'
-          color='#f50'
-          onPress={() => props.favorite ? console.log('Already favorite') : props.onPress()}
-        />
       </Card>
     )
   } else {
@@ -102,6 +100,17 @@ class DishDetail extends Component {
     })
   }
 
+  unMarkFavorite(dishId) {
+    const index = this.state.favorites.indexOf(dishId)
+    if(index > -1) {
+      let favorites = this.state.favorites
+      favorites.splice(index, 1)
+      this.setState({
+        favorites: favorites
+      })
+    }
+  }
+
   render() {
     const dishId = this.props.route.params.dishId
     return (
@@ -111,7 +120,8 @@ class DishDetail extends Component {
         <RenderDish 
           dish={this.state.dishes[+dishId]} 
           favorite={this.state.favorites.some(el => el === dishId)}
-          onPress={() => this.markFavorite(dishId)}
+          markFavorite={() => this.markFavorite(dishId)}
+          unMarkFavorite={() => this.unMarkFavorite(dishId)}
         />
         <RenderComments 
           comments={this.state.comments.filter(comment => comment.dishId === +dishId)} 
