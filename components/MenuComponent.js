@@ -1,50 +1,34 @@
 import React, { Component } from 'react'
 import { StyleSheet, FlatList } from 'react-native'
-import { Avatar, ListItem } from 'react-native-elements'
-import { DISHES } from '../shared/dishes'
+import { Tile } from 'react-native-elements'
+import { connect } from 'react-redux'
+import { baseUrl } from '../shared/baseUrl'
+
+const mapStateToProps = state => {
+  return {
+    dishes: state.dishes
+  }
+}
 
 class Menu extends Component {
-  constructor(props) {
-    super(props)
-    
-    this.state = {
-      dishes: DISHES
-    }
-  }
-
   render() {
     const navigation = this.props.navigation
     const renderMenuItem = ({ item, index }) => {
       return (
-        <ListItem 
+        <Tile 
           key={index} 
-          bottomDivider 
+          title={item.name}
+          caption={item.description}
+          featured
           onPress={() => navigation.navigate( 'Dish', { dishId: item.id })}
-        >
-          <Avatar 
-            rounded 
-            size='large'
-            source={require('./images/uthappizza.png')} 
-          />
-          <ListItem.Content>
-            <ListItem.Title
-              style={[styles.listItemTitle]}
-            >
-              {item.name}
-            </ListItem.Title>
-            <ListItem.Subtitle
-              style={[styles.listItemSubtitle]}
-            >
-              {item.description}
-            </ListItem.Subtitle>
-          </ListItem.Content>
-        </ListItem>    
+          imageSrc={{ uri: baseUrl + item.image }}
+        />    
       )
     }
 
     return (
       <FlatList 
-        data={this.state.dishes} 
+        data={this.props.dishes.dishes} 
         renderItem={renderMenuItem} 
         keyExtractor={item => item.id.toString()} 
       />
@@ -61,4 +45,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Menu
+export default connect(mapStateToProps)(Menu)

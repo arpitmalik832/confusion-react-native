@@ -28,8 +28,6 @@ export const promotions = (state = {
         promotions: []
       }
     default: 
-      return {
-        state
-      }
+      return state
   }
 }

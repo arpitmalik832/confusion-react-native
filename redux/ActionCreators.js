@@ -1,5 +1,5 @@
 import * as ActionTypes from './ActionTypes'
-import baseUrl from '../shared/baseUrl'
+import { baseUrl } from '../shared/baseUrl'
 
 export const fetchComments = () => (dispatch) => {
   return fetch(baseUrl + 'comments')
@@ -86,10 +86,10 @@ export const fetchLeaders = () => (dispatch) => {
     })
     .then(response => response.json())
     .then(leaders => dispatch(addLeaders(leaders)))
-    .catch(err => dispatch(leaderFailed(err)))
+    .catch(err => dispatch(leadersFailed(err)))
 }
 
-export const leaderLoading = () => ({
+export const leadersLoading = () => ({
   type: ActionTypes.LEADERS_LOADING
 })
 

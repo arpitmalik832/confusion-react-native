@@ -28,8 +28,6 @@ export const dishes = (state = {
         dishes: []
       }
     default: 
-      return {
-        state
-      }
+      return state
   }
 }

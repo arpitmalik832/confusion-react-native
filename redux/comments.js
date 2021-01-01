@@ -18,8 +18,6 @@ export const comments = (state = {
         comments: []
       }
     default: 
-      return {
-        state
-      }
+      return state
   }
 }

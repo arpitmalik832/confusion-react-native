@@ -3,7 +3,14 @@ import { View } from 'react-native'
 import { StyleSheet, Text } from 'react-native'
 import { Avatar, Card, ListItem } from 'react-native-elements'
 import { FlatList } from 'react-native-gesture-handler'
-import { LEADERS } from '../shared/leaders'
+import { connect } from 'react-redux'
+import { baseUrl } from '../shared/baseUrl'
+
+const mapStateToProps = state => {
+  return {
+    leaders: state.leaders
+  }
+}
 
 function History(props) {
   return (
@@ -33,7 +40,7 @@ function RenderLeaders(props) {
         <Avatar
           rounded
           size='large'
-          source={require('./images/alberto.png')}
+          source={{ uri: baseUrl + item.image }}
         />
         <ListItem.Content>
           <ListItem.Title
@@ -42,6 +49,7 @@ function RenderLeaders(props) {
             {item.name}
           </ListItem.Title>
           <ListItem.Subtitle
+            numberOfLines={15}
             style={[styles.listItemSubtitle]}
           >
             {item.description}
@@ -69,19 +77,11 @@ function RenderLeaders(props) {
 }
 
 class About extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      leaders: LEADERS
-    }
-  }
-
   render() {
     return (
       <View style={[styles.view]}>
         <History />
-        <RenderLeaders leaders={this.state.leaders} />
+        <RenderLeaders leaders={this.props.leaders.leaders} />
       </View>
     )
   }
@@ -111,4 +111,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default About
+export default connect(mapStateToProps)(About)

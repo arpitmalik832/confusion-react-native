@@ -28,8 +28,6 @@ export const leaders = (state = {
         leaders: []
       }
     default: 
-      return {
-        state
-      }
+      return state
   }
 }
