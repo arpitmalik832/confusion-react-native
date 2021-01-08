@@ -134,3 +134,25 @@ export const addPromos = (promotions) => ({
   type: ActionTypes.ADD_PROMOS,
   payload: promotions
 })
+
+export const postFavorite = (dishId) => (dispatch) => {
+  setTimeout(() => {
+    dispatch(addFavorite(dishId))
+  }, 2000)
+}
+
+export const addFavorite = (dishId) => ({
+  type: ActionTypes.ADD_FAVORITE,
+  payload: dishId
+})
+
+export const deleteFavorite = (dishId) => (dispatch) => {
+  setTimeout(() => {
+    dispatch(removeFavorite(dishId))
+  }, 2000)
+}
+
+export const removeFavorite = (dishId) => ({
+  type: ActionTypes.REMOVE_FAVORITE,
+  payload: dishId
+})

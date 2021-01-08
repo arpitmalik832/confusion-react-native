@@ -3,13 +3,20 @@ import { StyleSheet, View, Text, ScrollView, FlatList } from 'react-native'
 import { Card, Icon } from 'react-native-elements'
 import { connect } from 'react-redux'
 import { baseUrl } from '../shared/baseUrl'
+import { postFavorite, deleteFavorite } from '../redux/ActionCreators'
 
 const mapStateToProps = state => {
   return {
     dishes: state.dishes,
-    comments: state.comments
+    comments: state.comments,
+    favorites: state.favorites
   }
 }
+
+const mapDispatchToProps = dispatch => ({
+  postFavorite: (dishId) => dispatch(postFavorite(dishId)),
+  deleteFavorite: (dishId) => dispatch(deleteFavorite(dishId))
+})
 
 function RenderDish(props) {
   const dish = props.dish
@@ -91,29 +98,12 @@ function RenderComments(props) {
 }
 
 class DishDetail extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      favorites: []
-    }
-  }
-
   markFavorite(dishId) {
-    this.setState({
-      favorites: this.state.favorites.concat(dishId)
-    })
+    this.props.postFavorite(dishId)
   }
 
   unMarkFavorite(dishId) {
-    const index = this.state.favorites.indexOf(dishId)
-    if(index > -1) {
-      let favorites = this.state.favorites
-      favorites.splice(index, 1)
-      this.setState({
-        favorites: favorites
-      })
-    }
+    this.props.deleteFavorite(dishId)
   }
 
   render() {
@@ -123,8 +113,8 @@ class DishDetail extends Component {
         style={[styles.container]}
       >
         <RenderDish 
-          dish={this.props.dishes.dishes[+dishId]} 
-          favorite={this.state.favorites.some(el => el === dishId)}
+          dish={this.props.dishes.dishes[+dishId]}
+          favorite={this.props.favorites.some(el => el === dishId)}
           markFavorite={() => this.markFavorite(dishId)}
           unMarkFavorite={() => this.unMarkFavorite(dishId)}
         />
@@ -179,4 +169,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default connect(mapStateToProps)(DishDetail)
+export default connect(mapStateToProps, mapDispatchToProps)(DishDetail)
