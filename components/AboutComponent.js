@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet, Text, ScrollView, FlatList } from 'react-native'
 import { Avatar, Card, ListItem } from 'react-native-elements'
-import { FlatList } from 'react-native-gesture-handler'
 import { connect } from 'react-redux'
 import { baseUrl } from '../shared/baseUrl'
+import Loading from './LoadingComponent'
 
 const mapStateToProps = state => {
   return {
@@ -78,12 +77,52 @@ function RenderLeaders(props) {
 
 class About extends Component {
   render() {
-    return (
-      <View style={[styles.view]}>
-        <History />
-        <RenderLeaders leaders={this.props.leaders.leaders} />
-      </View>
-    )
+    if(this.props.leaders.isLoading) {
+      return (
+        <ScrollView
+          style={[styles.view]}
+        >
+          <History />
+          <Card
+            containerStyle={[styles.card]}
+          >
+            <Card.Title>
+              Corporate Leadership
+            </Card.Title>
+            <Card.Divider />
+            <Loading />
+          </Card>
+        </ScrollView>
+      )
+    } else if (this.props.leaders.errMess) {
+      return (
+        <ScrollView
+          style={[styles.view]}
+        >
+          <History />
+          <Card
+            containerStyle={[styles.card]}
+          >
+            <Card.Title>
+              Corporate Leadership
+            </Card.Title>
+            <Card.Divider />
+            <Text>
+              {this.props.leaders.errMess}
+            </Text>
+          </Card>
+        </ScrollView>
+      )
+    } else {
+      return (
+        <ScrollView 
+          style={[styles.view]}
+        >
+          <History />
+          <RenderLeaders leaders={this.props.leaders.leaders} />
+        </ScrollView>
+      )
+    }
   }
 }
 

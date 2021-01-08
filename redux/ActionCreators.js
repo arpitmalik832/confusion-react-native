@@ -13,17 +13,16 @@ export const fetchComments = () => (dispatch) => {
       }
     },
     err => {
-      var errMess = new Error(err.message)
-      throw errMess
+      throw err
     })
     .then(response => response.json())
     .then(comments => dispatch(addComments(comments)))
     .catch(err => dispatch(commentsFailed(err)))
 }
 
-export const commentsFailed = (errMess) => ({
+export const commentsFailed = (err) => ({
   type: ActionTypes.COMMENTS_FAILED,
-  payload: errMess
+  payload: err.message
 })
 
 export const addComments = (comments) => ({
@@ -45,8 +44,7 @@ export const fetchDishes = () => (dispatch) => {
       }
     },
     err => {
-      var errMess = new Error(err.message)
-      throw errMess
+      throw err
     })
     .then(response => response.json())
     .then(dishes => dispatch(addDishes(dishes)))
@@ -57,9 +55,9 @@ export const dishesLoading = () => ({
   type: ActionTypes.DISHES_LOADING
 })
 
-export const dishesFailed = (errMess) => ({
+export const dishesFailed = (err) => ({
   type: ActionTypes.DISHES_FAILED,
-  payload: errMess
+  payload: err.message
 })
 
 export const addDishes = (dishes) => ({
@@ -81,8 +79,7 @@ export const fetchLeaders = () => (dispatch) => {
       }
     },
     err => {
-      var errMess = new Error(err.message)
-      throw errMess
+      throw err
     })
     .then(response => response.json())
     .then(leaders => dispatch(addLeaders(leaders)))
@@ -93,9 +90,9 @@ export const leadersLoading = () => ({
   type: ActionTypes.LEADERS_LOADING
 })
 
-export const leadersFailed = (errMess) => ({
+export const leadersFailed = (err) => ({
   type: ActionTypes.LEADERS_FAILED,
-  payload: errMess
+  payload: err.message
 })
 
 export const addLeaders = (leaders) => ({
@@ -117,8 +114,7 @@ export const fetchPromos = () => (dispatch) => {
       }
     },
     err => {
-      var errMess = new Error(err.message)
-      throw errMess
+      throw err
     })
     .then(response => response.json())
     .then(promotions => dispatch(addPromos(promotions)))
@@ -129,9 +125,9 @@ export const promosLoading = () => ({
   type: ActionTypes.PROMOS_LOADING
 })
 
-export const promosFailed = (errMess) => ({
+export const promosFailed = (err) => ({
   type: ActionTypes.PROMOS_FAILED,
-  payload: errMess
+  payload: err.message
 })
 
 export const addPromos = (promotions) => ({
