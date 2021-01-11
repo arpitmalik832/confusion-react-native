@@ -6,6 +6,7 @@ import About from './AboutComponent'
 import Menu from './MenuComponent'
 import DishDetail from './DishDetailComponent'
 import Contact from './ContactComponent'
+import Reservation from './ReservationComponent'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer'
@@ -126,7 +127,7 @@ const ContactNavigator = () => {
         component={Contact}
         options={(props) => {
           return ({
-            title: '',
+            title: 'Contact Us',
             headerLeft: () => {
               return (
                 <Icon 
@@ -163,6 +164,42 @@ const AboutNavigator = () => {
         options={(props) => {
           return ({
             title: 'About Us',
+            headerLeft: () => {
+              return (
+                <Icon 
+                  name="menu"
+                  size={24}
+                  color="#fff"
+                  containerStyle={[styles.navigatorHeaderLeft]}
+                  onPress={() => props.navigation.toggleDrawer()}
+                />
+              )
+            }
+          })
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
+
+const ReservationNavigator = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName='Reservation'
+      headerMode='screen'
+      screenOptions={{
+        headerStyle: [styles.navigatorHeader],
+        headerTintColor: '#fff',
+        headerTitleAlign: 'left',
+        headerTitleStyle: [styles.navigatorHeaderTitle]
+      }}
+    >
+      <Stack.Screen
+        name='Reservation'
+        component={Reservation}
+        options={(props) => {
+          return ({
+            title: 'Reserve a Table',
             headerLeft: () => {
               return (
                 <Icon 
@@ -295,6 +332,24 @@ const MainNavigator = () => {
           }
         }}
       />  
+      <Drawer.Screen
+        name='ReservationNavigator'
+        component={ReservationNavigator}
+        options={{
+          title: 'ReservationNavigator',
+          drawerLabel: 'Reserve a Table',
+          drawerIcon: ({ tintColor }) => {
+            return (
+              <Icon 
+                name="cutlery"
+                type="font-awesome"
+                size={22}
+                color={tintColor}
+              />
+            )
+          }
+        }}
+      /> 
     </Drawer.Navigator>
   )
 }
