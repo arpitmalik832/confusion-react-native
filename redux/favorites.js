@@ -8,13 +8,7 @@ export const favorites = (state = [], action) => {
       else 
         return state.concat(action.payload)
     case ActionTypes.REMOVE_FAVORITE:
-      const index = state.indexOf(action.payload)
-      if(index > -1) {
-        let favorites = state
-        favorites.splice(index, 1)
-        return favorites
-      } else
-        return state
+      return state.filter((favorite) => favorite !== action.payload)
     default:
       return state
   }

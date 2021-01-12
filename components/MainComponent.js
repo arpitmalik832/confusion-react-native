@@ -6,6 +6,7 @@ import About from './AboutComponent'
 import Menu from './MenuComponent'
 import DishDetail from './DishDetailComponent'
 import Contact from './ContactComponent'
+import Favorites from './FavoriteComponent'
 import Reservation from './ReservationComponent'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
@@ -28,6 +29,78 @@ const mapDispatchToProps = dispatch => ({
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
+
+const HomeNavigator = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName='Home'
+      headerMode='screen'
+      screenOptions={{
+        headerStyle: [styles.navigatorHeader],
+        headerTintColor: '#fff',
+        headerTitleAlign: 'left',
+        headerTitleStyle: [styles.navigatorHeaderTitle]
+      }}
+    >
+      <Stack.Screen
+        name='Home'
+        component={Home}
+        options={(props) => {
+          return ({
+            title: 'Home',
+            headerLeft: () => {
+              return (
+                <Icon 
+                  name="menu"
+                  size={24}
+                  color="#fff"
+                  containerStyle={[styles.navigatorHeaderLeft]}
+                  onPress={() => props.navigation.toggleDrawer()}
+                />
+              )
+            }
+          })
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
+
+const AboutNavigator = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName='About'
+      headerMode='screen'
+      screenOptions={{
+        headerStyle: [styles.navigatorHeader],
+        headerTintColor: '#fff',
+        headerTitleAlign: 'left',
+        headerTitleStyle: [styles.navigatorHeaderTitle]
+      }}
+    >
+      <Stack.Screen
+        name='About'
+        component={About}
+        options={(props) => {
+          return ({
+            title: 'About Us',
+            headerLeft: () => {
+              return (
+                <Icon 
+                  name="menu"
+                  size={24}
+                  color="#fff"
+                  containerStyle={[styles.navigatorHeaderLeft]}
+                  onPress={() => props.navigation.toggleDrawer()}
+                />
+              )
+            }
+          })
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
 
 const MenuNavigator = () => {
   return (
@@ -74,10 +147,10 @@ const MenuNavigator = () => {
   )
 }
 
-const HomeNavigator = () => {
+const FavoritesNavigtor = () => {
   return (
     <Stack.Navigator
-      initialRouteName='Home'
+      initialRouteName='Favorites'
       headerMode='screen'
       screenOptions={{
         headerStyle: [styles.navigatorHeader],
@@ -87,11 +160,11 @@ const HomeNavigator = () => {
       }}
     >
       <Stack.Screen
-        name='Home'
-        component={Home}
+        name='Favorites'
+        component={Favorites}
         options={(props) => {
           return ({
-            title: 'Home',
+            title: 'My Favorites',
             headerLeft: () => {
               return (
                 <Icon 
@@ -128,42 +201,6 @@ const ContactNavigator = () => {
         options={(props) => {
           return ({
             title: 'Contact Us',
-            headerLeft: () => {
-              return (
-                <Icon 
-                  name="menu"
-                  size={24}
-                  color="#fff"
-                  containerStyle={[styles.navigatorHeaderLeft]}
-                  onPress={() => props.navigation.toggleDrawer()}
-                />
-              )
-            }
-          })
-        }}
-      />
-    </Stack.Navigator>
-  )
-}
-
-const AboutNavigator = () => {
-  return (
-    <Stack.Navigator
-      initialRouteName='About'
-      headerMode='screen'
-      screenOptions={{
-        headerStyle: [styles.navigatorHeader],
-        headerTintColor: '#fff',
-        headerTitleAlign: 'left',
-        headerTitleStyle: [styles.navigatorHeaderTitle]
-      }}
-    >
-      <Stack.Screen
-        name='About'
-        component={About}
-        options={(props) => {
-          return ({
-            title: 'About Us',
             headerLeft: () => {
               return (
                 <Icon 
@@ -306,6 +343,24 @@ const MainNavigator = () => {
             return (
               <Icon 
                 name="list"
+                type="font-awesome"
+                size={24}
+                color={tintColor}
+              />
+            )
+          }
+        }}
+      />  
+      <Drawer.Screen
+        name='FavoritesNavigator'
+        component={FavoritesNavigtor}
+        options={{
+          title: 'FavoritesNavigator',
+          drawerLabel: 'My Favorites',
+          drawerIcon: ({ tintColor }) => {
+            return (
+              <Icon 
+                name="heart"
                 type="font-awesome"
                 size={24}
                 color={tintColor}

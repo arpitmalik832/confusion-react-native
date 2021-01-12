@@ -156,12 +156,15 @@ function RenderComments(props) {
         >
           {item.comment}
         </Text>
-        <Rating
-          readonly
-          imageSize={12}
-          style={[styles.itemRating]}
-          startingValue={item.rating}
-        />
+        <View
+          style={[styles.itemRatingContainer]}
+        >
+          <Rating
+            readonly
+            imageSize={12}
+            startingValue={item.rating}
+          />
+        </View>
         <Text
           style={[styles.itemDetails]}
         >
@@ -252,7 +255,7 @@ const styles = StyleSheet.create({
   itemDetails: {
     fontSize: 12
   },
-  itemRating: {
+  itemRatingContainer: {
     alignItems : 'flex-start',
     marginTop: 5,
     marginBottom: 5
