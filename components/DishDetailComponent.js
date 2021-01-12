@@ -1,9 +1,10 @@
-import React, { Component } from 'react'
-import { StyleSheet, View, Text, ScrollView, FlatList } from 'react-native'
-import { Card, Icon } from 'react-native-elements'
+import React, { Component, useState } from 'react'
+import { Platform, StyleSheet, View, Text, ScrollView, FlatList, Modal } from 'react-native'
+import { Card, Icon, Rating, Input } from 'react-native-elements'
 import { connect } from 'react-redux'
 import { baseUrl } from '../shared/baseUrl'
-import { postFavorite, deleteFavorite } from '../redux/ActionCreators'
+import { postFavorite, deleteFavorite, postComment } from '../redux/ActionCreators'
+import { Button } from 'react-native'
 
 const mapStateToProps = state => {
   return {
@@ -15,10 +16,28 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => ({
   postFavorite: (dishId) => dispatch(postFavorite(dishId)),
-  deleteFavorite: (dishId) => dispatch(deleteFavorite(dishId))
+  deleteFavorite: (dishId) => dispatch(deleteFavorite(dishId)),
+  postComment: (dishId, author, rating, comment) => dispatch(postComment(dishId, author, rating, comment))
 })
 
 function RenderDish(props) {
+  const [modalVisible, setModalVisible] = useState(false)
+  const [author, setAuthor] = useState('')
+  const [rating, setRating] = useState(3)
+  const [comment, setComment] = useState('')
+
+  const resetForm = () => {
+    setAuthor('')
+    setRating(3)
+    setComment('')
+  }
+
+  const handleComment = () => {
+    props.postComment(author, rating, comment)
+    resetForm()
+    setModalVisible(false)
+  }
+
   const dish = props.dish
   if(dish != null) {
     return (
@@ -32,18 +51,90 @@ function RenderDish(props) {
           <Card.FeaturedTitle>
             {dish.name}
           </Card.FeaturedTitle>    
-          <Icon
-            name={ props.favorite ? 'heart' : 'heart-o' }
-            type='font-awesome'
-            color='#0FF'
-            onPress={() => props.favorite ? props.unMarkFavorite() : props.markFavorite()}
-          />
+          <View
+            style={[styles.iconsContainer]}
+          >
+            <Icon
+              containerStyle={[styles.icon]}
+              name={ props.favorite ? 'heart' : 'heart-o' }
+              type='font-awesome'
+              color='#0FF'
+              onPress={() => props.favorite ? props.unMarkFavorite() : props.markFavorite()}
+            />
+            {
+              Platform.OS === 'web' ?
+              <>
+              </>
+              :
+              <Icon
+                containerStyle={[styles.icon]}
+                name='pencil'
+                type='font-awesome'
+                color='#512AD8'
+                onPress={() => setModalVisible(true)}
+              />
+            }
+          </View>
         </Card.Image>
         <Text 
           style={[styles.cardDescription]}
         >
           {dish.description}
         </Text>
+        {
+          Platform.OS === 'web' ?
+          <>
+          </>
+          :
+          <Modal
+            animationType='slide'
+            transparent={false}
+            visible={modalVisible}
+            onDismiss={() => setModalVisible(false)}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View
+              style={[styles.modal]}
+            >
+              <Rating
+                showRating
+                type='star'
+                ratingCount={5}
+                onFinishRating={(rating) => setRating(rating)}
+              />
+              <Input
+                placeholder='Author'
+                leftIcon={{
+                  name: 'user-o',
+                  type: 'font-awesome'
+                }}
+                onChangeText={(text) => setAuthor(text)}
+              />
+              <Input
+                placeholder='Comment'
+                leftIcon={{
+                  name: 'comment-o',
+                  type: 'font-awesome'
+                }}
+                onChangeText={(text) => setComment(text)}
+              />
+              <Button
+                title='Submit'
+                color='#512DA8'
+                onPress={() => handleComment()}
+              />
+              <View
+                style={[styles.mt_20]}
+              >
+                <Button
+                  title='Cancel'
+                  color='#512DA8'
+                  onPress={() => setModalVisible(false)}
+                />
+              </View>
+            </View>
+          </Modal>
+        }
       </Card>
     )
   } else {
@@ -65,11 +156,12 @@ function RenderComments(props) {
         >
           {item.comment}
         </Text>
-        <Text
-          style={[styles.itemDetails]}
-        >
-          {item.rating} Stars
-        </Text>
+        <Rating
+          readonly
+          imageSize={12}
+          style={[styles.itemRating]}
+          startingValue={item.rating}
+        />
         <Text
           style={[styles.itemDetails]}
         >
@@ -98,14 +190,6 @@ function RenderComments(props) {
 }
 
 class DishDetail extends Component {
-  markFavorite(dishId) {
-    this.props.postFavorite(dishId)
-  }
-
-  unMarkFavorite(dishId) {
-    this.props.deleteFavorite(dishId)
-  }
-
   render() {
     const dishId = this.props.route.params.dishId
     return (
@@ -115,8 +199,9 @@ class DishDetail extends Component {
         <RenderDish 
           dish={this.props.dishes.dishes[+dishId]}
           favorite={this.props.favorites.some(el => el === dishId)}
-          markFavorite={() => this.markFavorite(dishId)}
-          unMarkFavorite={() => this.unMarkFavorite(dishId)}
+          markFavorite={() => this.props.postFavorite(dishId)}
+          unMarkFavorite={() => this.props.deleteFavorite(dishId)}
+          postComment={(author, rating, comment) => this.props.postComment(dishId, author, rating, comment)}
         />
         <RenderComments 
           comments={this.props.comments.comments.filter(comment => comment.dishId === +dishId)} 
@@ -166,6 +251,39 @@ const styles = StyleSheet.create({
   },
   itemDetails: {
     fontSize: 12
+  },
+  itemRating: {
+    alignItems : 'flex-start',
+    marginTop: 5,
+    marginBottom: 5
+  },
+  iconsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  icon: {
+    marginLeft: 5,
+    marginRight: 5
+  },
+  modal: {
+    justifyContent: 'center',
+    margin: 20
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    backgroundColor: '#512DA8',
+    textAlign: 'center',
+    color: 'white',
+    marginBottom: 20
+  },
+  modalText: {
+    fontSize: 18,
+    margin: 10
+  },
+  mt_20: {
+    marginTop: 20
   }
 })
 
