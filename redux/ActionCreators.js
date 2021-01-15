@@ -136,9 +136,7 @@ export const addPromos = (promotions) => ({
 })
 
 export const postFavorite = (dishId) => (dispatch) => {
-  setTimeout(() => {
-    dispatch(addFavorite(dishId))
-  }, 2000)
+  dispatch(addFavorite(dishId))
 }
 
 export const addFavorite = (dishId) => ({
@@ -147,9 +145,7 @@ export const addFavorite = (dishId) => ({
 })
 
 export const deleteFavorite = (dishId) => (dispatch) => {
-  setTimeout(() => {
-    dispatch(removeFavorite(dishId))
-  }, 2000)
+  dispatch(removeFavorite(dishId))  
 }
 
 export const removeFavorite = (dishId) => ({
