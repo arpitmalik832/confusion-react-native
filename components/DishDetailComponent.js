@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import { baseUrl } from '../shared/baseUrl'
 import { postFavorite, deleteFavorite, postComment } from '../redux/ActionCreators'
 import { Button } from 'react-native'
+import * as Animatable from 'react-native-animatable'
 
 const mapStateToProps = state => {
   return {
@@ -41,101 +42,107 @@ function RenderDish(props) {
   const dish = props.dish
   if(dish != null) {
     return (
-      <Card 
-        containerStyle={[styles.card]}
+      <Animatable.View
+        animation='fadeInDown'
+        duration={2000}
+        delay={1000}
       >
-        <Card.Image 
-          source={{ uri: baseUrl + dish.image }} 
-          style={[styles.cardImage]}
+        <Card 
+          containerStyle={[styles.card]}
         >
-          <Card.FeaturedTitle>
-            {dish.name}
-          </Card.FeaturedTitle>    
-          <View
-            style={[styles.iconsContainer]}
+          <Card.Image 
+            source={{ uri: baseUrl + dish.image }} 
+            style={[styles.cardImage]}
           >
-            <Icon
-              containerStyle={[styles.icon]}
-              name={ props.favorite ? 'heart' : 'heart-o' }
-              type='font-awesome'
-              color='#0FF'
-              onPress={() => props.favorite ? props.unMarkFavorite() : props.markFavorite()}
-            />
-            {
-              Platform.OS === 'web' ?
-              <>
-              </>
-              :
+            <Card.FeaturedTitle>
+              {dish.name}
+            </Card.FeaturedTitle>    
+            <View
+              style={[styles.iconsContainer]}
+            >
               <Icon
                 containerStyle={[styles.icon]}
-                name='pencil'
+                name={ props.favorite ? 'heart' : 'heart-o' }
                 type='font-awesome'
-                color='#512AD8'
-                onPress={() => setModalVisible(true)}
+                color='#0FF'
+                onPress={() => props.favorite ? props.unMarkFavorite() : props.markFavorite()}
               />
-            }
-          </View>
-        </Card.Image>
-        <Text 
-          style={[styles.cardDescription]}
-        >
-          {dish.description}
-        </Text>
-        {
-          Platform.OS === 'web' ?
-          <>
-          </>
-          :
-          <Modal
-            animationType='slide'
-            transparent={false}
-            visible={modalVisible}
-            onDismiss={() => setModalVisible(false)}
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <View
-              style={[styles.modal]}
-            >
-              <Rating
-                showRating
-                type='star'
-                ratingCount={5}
-                onFinishRating={(rating) => setRating(rating)}
-              />
-              <Input
-                placeholder='Author'
-                leftIcon={{
-                  name: 'user-o',
-                  type: 'font-awesome'
-                }}
-                onChangeText={(text) => setAuthor(text)}
-              />
-              <Input
-                placeholder='Comment'
-                leftIcon={{
-                  name: 'comment-o',
-                  type: 'font-awesome'
-                }}
-                onChangeText={(text) => setComment(text)}
-              />
-              <Button
-                title='Submit'
-                color='#512DA8'
-                onPress={() => handleComment()}
-              />
-              <View
-                style={[styles.mt_20]}
-              >
-                <Button
-                  title='Cancel'
-                  color='#512DA8'
-                  onPress={() => setModalVisible(false)}
+              {
+                Platform.OS === 'web' ?
+                <>
+                </>
+                :
+                <Icon
+                  containerStyle={[styles.icon]}
+                  name='pencil'
+                  type='font-awesome'
+                  color='#512AD8'
+                  onPress={() => setModalVisible(true)}
                 />
-              </View>
+              }
             </View>
-          </Modal>
-        }
-      </Card>
+          </Card.Image>
+          <Text 
+            style={[styles.cardDescription]}
+          >
+            {dish.description}
+          </Text>
+          {
+            Platform.OS === 'web' ?
+            <>
+            </>
+            :
+            <Modal
+              animationType='slide'
+              transparent={false}
+              visible={modalVisible}
+              onDismiss={() => setModalVisible(false)}
+              onRequestClose={() => setModalVisible(false)}
+            >
+              <View
+                style={[styles.modal]}
+              >
+                <Rating
+                  showRating
+                  type='star'
+                  ratingCount={5}
+                  onFinishRating={(rating) => setRating(rating)}
+                />
+                <Input
+                  placeholder='Author'
+                  leftIcon={{
+                    name: 'user-o',
+                    type: 'font-awesome'
+                  }}
+                  onChangeText={(text) => setAuthor(text)}
+                />
+                <Input
+                  placeholder='Comment'
+                  leftIcon={{
+                    name: 'comment-o',
+                    type: 'font-awesome'
+                  }}
+                  onChangeText={(text) => setComment(text)}
+                />
+                <Button
+                  title='Submit'
+                  color='#512DA8'
+                  onPress={() => handleComment()}
+                />
+                <View
+                  style={[styles.mt_20]}
+                >
+                  <Button
+                    title='Cancel'
+                    color='#512DA8'
+                    onPress={() => setModalVisible(false)}
+                  />
+                </View>
+              </View>
+            </Modal>
+          }
+        </Card>
+      </Animatable.View>
     )
   } else {
     return (
@@ -175,20 +182,26 @@ function RenderComments(props) {
   }
 
   return (
-    <Card
-      containerStyle={[styles.commentCard]}  
+    <Animatable.View
+      animation='fadeInUp'
+      duration={2000}
+      delay={1000}
     >
-      <Card.Title>
-        Comments
-      </Card.Title>
-      <Card.Divider />
-      <FlatList
-        data={props.comments}
-        renderItem={renderComment}
-        keyExtractor={item => item.id.toString()}
-        style={[styles.commentCardDescription]}
-      />
-    </Card>
+      <Card
+        containerStyle={[styles.commentCard]}  
+      >
+        <Card.Title>
+          Comments
+        </Card.Title>
+        <Card.Divider />
+        <FlatList
+          data={props.comments}
+          renderItem={renderComment}
+          keyExtractor={item => item.id.toString()}
+          style={[styles.commentCardDescription]}
+        />
+      </Card>
+    </Animatable.View>
   )
 }
 

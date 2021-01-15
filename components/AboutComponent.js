@@ -4,6 +4,8 @@ import { Avatar, Card, ListItem } from 'react-native-elements'
 import { connect } from 'react-redux'
 import { baseUrl } from '../shared/baseUrl'
 import Loading from './LoadingComponent'
+import * as Animatable from 'react-native-animatable'
+import { SafeAreaView } from 'react-native'
 
 const mapStateToProps = state => {
   return {
@@ -99,18 +101,24 @@ class About extends Component {
         <ScrollView
           style={[styles.view]}
         >
-          <History />
-          <Card
-            containerStyle={[styles.card]}
+          <Animatable.View
+            animation='fadeInDown'
+            duration={2000}
+            delay={1000}
           >
-            <Card.Title>
-              Corporate Leadership
-            </Card.Title>
-            <Card.Divider />
-            <Text>
-              {this.props.leaders.errMess}
-            </Text>
-          </Card>
+            <History />
+            <Card
+              containerStyle={[styles.card]}
+            >
+              <Card.Title>
+                Corporate Leadership
+              </Card.Title>
+              <Card.Divider />
+              <Text>
+                {this.props.leaders.errMess}
+              </Text>
+            </Card>
+          </Animatable.View>
         </ScrollView>
       )
     } else {
@@ -118,8 +126,14 @@ class About extends Component {
         <ScrollView 
           style={[styles.view]}
         >
-          <History />
-          <RenderLeaders leaders={this.props.leaders.leaders} />
+          <Animatable.View
+            animation='fadeInDown'
+            duration={2000}
+            delay={1000}
+          >
+            <History />
+            <RenderLeaders leaders={this.props.leaders.leaders} />
+          </Animatable.View>
         </ScrollView>
       )
     }

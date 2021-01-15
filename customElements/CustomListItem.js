@@ -3,6 +3,7 @@ import { View, StyleSheet, Animated, TouchableOpacity } from 'react-native'
 import { ListItem, Avatar } from'react-native-elements'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
 import { baseUrl } from '../shared/baseUrl'
+import * as Animatable from 'react-native-animatable'
 
 const LeftActions = (progress, dragX) => {
   const scale = dragX.interpolate({
@@ -65,28 +66,33 @@ const CustomListItem = ({ item, index, navigate, rightOnPress }) => (
       />
     )}
   >
-    <ListItem
-      key={index}
-      onPress={() => navigate( 'Dish', { dishId: item.id })}
+    <Animatable.View
+      animation='fadeInRightBig'
+      duration={2000}
     >
-      <Avatar
-        rounded
-        size='large'
-        source={{ uri: baseUrl + item.image }}
-      />
-      <ListItem.Content>
-        <ListItem.Title
-          style={[styles.listItemTitle]}
-        >
-          {item.name}
-        </ListItem.Title>
-        <ListItem.Subtitle
-          style={[styles.listItemSubtitle]}
-        >
-          {item.description}
-        </ListItem.Subtitle>
-      </ListItem.Content>
-    </ListItem>
+      <ListItem
+        key={index}
+        onPress={() => navigate( 'Dish', { dishId: item.id })}
+      >
+        <Avatar
+          rounded
+          size='large'
+          source={{ uri: baseUrl + item.image }}
+        />
+        <ListItem.Content>
+          <ListItem.Title
+            style={[styles.listItemTitle]}
+          >
+            {item.name}
+          </ListItem.Title>
+          <ListItem.Subtitle
+            style={[styles.listItemSubtitle]}
+          >
+            {item.description}
+          </ListItem.Subtitle>
+        </ListItem.Content>
+      </ListItem>
+    </Animatable.View>
   </Swipeable>
 )
 
