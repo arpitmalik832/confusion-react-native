@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import { FlatList } from 'react-native'
+import { View, Text, FlatList, Alert } from 'react-native'
 import CustomListItem from '../customElements/CustomListItem'
 import Loading from './LoadingComponent'
 import { deleteFavorite } from '../redux/ActionCreators'
 import { connect } from 'react-redux'
+import { Platform } from 'react-native'
 
 const mapStateToProps = state => {
   return {
@@ -42,7 +43,31 @@ class Favorites extends Component {
               item={item}
               index={index}
               navigate={this.props.navigation.navigate}
-              rightOnPress={() => this.props.deleteFavorite(item.id)}
+              rightOnPress={() => {
+                if(Platform.OS === 'web') {
+                  this.props.deleteFavorite(item.id)
+                } else {
+                  Alert.alert(
+                    "Delete Favorite",
+                    "Are you sure to delete " + item.name + "?",
+                    [
+                      {
+                        text: 'Cancel',
+                        onPress: () => console.log(item.name + ' Not deleted'),
+                        style: 'cancel'
+                      },
+                      {
+                        text: 'Ok',
+                        onPress: () => this.props.deleteFavorite(item.id),
+                        style: 'default'
+                      }
+                    ],
+                    {
+                      cancelable: false
+                    }
+                  )
+                }
+              }}
             />
           )}
         />
