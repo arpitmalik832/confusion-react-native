@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import { Platform, StyleSheet, View, Text, ScrollView, FlatList, Modal } from 'react-native'
+import { Platform, StyleSheet, View, Text, ScrollView, FlatList, Modal, Alert, PanResponder } from 'react-native'
 import { Card, Icon, Rating, Input } from 'react-native-elements'
 import { connect } from 'react-redux'
 import { baseUrl } from '../shared/baseUrl'
@@ -39,13 +39,56 @@ function RenderDish(props) {
     setModalVisible(false)
   }
 
+  const recognizeDrag = ({ moveX, moveY, dx, dy}) => {
+    if(dx < -200) //right to left
+      return true
+    else 
+      return false
+  }
+
   const dish = props.dish
+
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: (e, gestureState) => {
+      return true
+    },
+    onPanResponderEnd: (e, gestureState) => {
+      if (recognizeDrag(gestureState)) {
+        if(Platform.OS === 'web') {
+          props.favorite ? props.unMarkFavorite() : props.markFavorite()
+        } else { 
+          Alert.alert(
+            (props.favorite ? 'Delete from ': 'Add to ') + 'Favorites?',
+            'Are you sure to ' + (props.favorite ? 'delete ' : 'add ') + dish.name + '?',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Cancel Pressed'),
+                style: 'cancel'
+              },
+              {
+                text: 'Ok',
+                onPress: () => props.favorite ? props.unMarkFavorite() : props.markFavorite(),
+                style: 'default'
+              }
+            ],
+            {
+              cancelable: false
+            }
+          )
+        }
+      }
+      return true
+    }
+  })
+
   if(dish != null) {
     return (
       <Animatable.View
         animation='fadeInDown'
         duration={2000}
         delay={1000}
+        {...panResponder.panHandlers}
       >
         <Card 
           containerStyle={[styles.card]}
