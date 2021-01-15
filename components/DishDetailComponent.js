@@ -26,6 +26,7 @@ function RenderDish(props) {
   const [author, setAuthor] = useState('')
   const [rating, setRating] = useState(3)
   const [comment, setComment] = useState('')
+  const [ref, setRef] = useState(null)
 
   const resetForm = () => {
     setAuthor('')
@@ -51,6 +52,11 @@ function RenderDish(props) {
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: (e, gestureState) => {
       return true
+    },
+    onPanResponderGrant: () => {
+      ref
+        .rubberBand(1000)
+        .then(endState => console.log( endState.finished ? 'finished' : 'cancelled' ))
     },
     onPanResponderEnd: (e, gestureState) => {
       if (recognizeDrag(gestureState)) {
@@ -88,6 +94,7 @@ function RenderDish(props) {
         animation='fadeInDown'
         duration={2000}
         delay={1000}
+        ref={ref => setRef(ref)}
         {...panResponder.panHandlers}
       >
         <Card 
