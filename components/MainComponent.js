@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, Platform, View, Text, Image } from 'react-native'
 import { Icon } from 'react-native-elements'
+import Login from './LoginComponent'
 import Home from './HomeComponent'
 import About from './AboutComponent'
 import Menu from './MenuComponent'
@@ -29,6 +30,42 @@ const mapDispatchToProps = dispatch => ({
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
+
+const LoginNavigator = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName='Login'
+      headerMode='screen'
+      screenOptions={{
+        headerStyle: [styles.navigatorHeader],
+        headerTintColor: '#fff',
+        headerTitleAlign: 'left',
+        headerTitleStyle: [styles.navigatorHeaderTitle]
+      }}
+    >
+      <Stack.Screen
+        name='Login'
+        component={Login}
+        options={(props) => {
+          return ({
+            title: 'Login',
+            headerLeft: () => {
+              return (
+                <Icon 
+                  name="menu"
+                  size={24}
+                  color="#fff"
+                  containerStyle={[styles.navigatorHeaderLeft]}
+                  onPress={() => props.navigation.toggleDrawer()}
+                />
+              )
+            }
+          })
+        }}
+      />
+    </Stack.Navigator>
+  )
+}
 
 const HomeNavigator = () => {
   return (
@@ -297,6 +334,24 @@ const MainNavigator = () => {
       drawerStyle={[styles.drawer]}
       drawerContent={CustomDrawerContentComponent}
     >
+      <Drawer.Screen
+        name='LoginNavigator'
+        component={LoginNavigator}
+        options={{
+          title: 'LoginNavigator',
+          drawerLabel: 'Login',
+          drawerIcon: ({ tintColor }) => {
+            return (
+              <Icon 
+                name="sign-in"
+                type="font-awesome"
+                size={24}
+                color={tintColor}
+              />
+            )
+          }
+        }}
+      />
       <Drawer.Screen
         name='HomeNavigator'
         component={HomeNavigator}
