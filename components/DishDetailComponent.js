@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import { Platform, StyleSheet, View, Text, ScrollView, FlatList, Modal, Alert, PanResponder } from 'react-native'
+import { Platform, StyleSheet, View, Text, ScrollView, FlatList, Modal, Alert, PanResponder, Share } from 'react-native'
 import { Card, Icon, Rating, Input } from 'react-native-elements'
 import { connect } from 'react-redux'
 import { baseUrl } from '../shared/baseUrl'
@@ -43,6 +43,19 @@ function RenderDish(props) {
     props.postComment(author, rating, comment)
     resetForm()
     setModalVisible(false)
+  }
+
+  const shareDish = (title, message, url) => {
+    Share.share(
+      {
+        title: title,
+        message: title + ': ' + message + ' ' + url,
+        url: url
+      },
+      {
+        dialogTitle: 'Share ' + title
+      }
+    )
   }
 
   const recognizeDrag = ({ moveX, moveY, dx, dy}) => {
@@ -134,13 +147,22 @@ function RenderDish(props) {
                 <>
                 </>
                 :
-                <Icon
-                  containerStyle={[styles.icon]}
-                  name='pencil'
-                  type='font-awesome'
-                  color='#512AD8'
-                  onPress={() => setModalVisible(true)}
-                />
+                <>
+                  <Icon
+                    containerStyle={[styles.icon]}
+                    name='pencil'
+                    type='font-awesome'
+                    color='#512AD8'
+                    onPress={() => setModalVisible(true)}
+                  />
+                  <Icon
+                    containerStyle={[styles.icon]}
+                    name='share'
+                    type='font-awesome'
+                    color='#512DA8'
+                    onPress={() => shareDish(dish.name, dish.description, baseUrl + dish.image)}
+                  />
+                </>
               }
             </View>
           </Card.Image>
