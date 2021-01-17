@@ -7,6 +7,11 @@ import { postFavorite, deleteFavorite, postComment } from '../redux/ActionCreato
 import { Button } from 'react-native'
 import * as Animatable from 'react-native-animatable'
 
+const Gestures = {
+  SHOW_COMMENT_MODAL: 'SHOW_COMMENT_MODAL',
+  SHOW_FAVORITE_ALERT: 'SHOW_FAVORITE_ALERT'
+}
+
 const mapStateToProps = state => {
   return {
     dishes: state.dishes,
@@ -42,9 +47,9 @@ function RenderDish(props) {
 
   const recognizeDrag = ({ moveX, moveY, dx, dy}) => {
     if(dx < -200) //right to left
-      return true
-    else 
-      return false
+      return Gestures.SHOW_FAVORITE_ALERT
+    else if(dx > 200)
+      return Gestures.SHOW_COMMENT_MODAL
   }
 
   const dish = props.dish
@@ -59,30 +64,37 @@ function RenderDish(props) {
         .then(endState => console.log( endState.finished ? 'finished' : 'cancelled' ))
     },
     onPanResponderEnd: (e, gestureState) => {
-      if (recognizeDrag(gestureState)) {
-        if(Platform.OS === 'web') {
-          props.favorite ? props.unMarkFavorite() : props.markFavorite()
-        } else { 
-          Alert.alert(
-            (props.favorite ? 'Delete from ': 'Add to ') + 'Favorites?',
-            'Are you sure to ' + (props.favorite ? 'delete ' : 'add ') + dish.name + '?',
-            [
+      switch(recognizeDrag(gestureState)) {
+        case Gestures.SHOW_FAVORITE_ALERT:
+          if(Platform.OS === 'web') {
+            props.favorite ? props.unMarkFavorite() : props.markFavorite()
+          } else { 
+            Alert.alert(
+              (props.favorite ? 'Delete from ': 'Add to ') + 'Favorites?',
+              'Are you sure to ' + (props.favorite ? 'delete ' : 'add ') + dish.name + '?',
+              [
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel'
+                },
+                {
+                  text: 'Ok',
+                  onPress: () => props.favorite ? props.unMarkFavorite() : props.markFavorite(),
+                  style: 'default'
+                }
+              ],
               {
-                text: 'Cancel',
-                onPress: () => console.log('Cancel Pressed'),
-                style: 'cancel'
-              },
-              {
-                text: 'Ok',
-                onPress: () => props.favorite ? props.unMarkFavorite() : props.markFavorite(),
-                style: 'default'
+                cancelable: false
               }
-            ],
-            {
-              cancelable: false
-            }
-          )
-        }
+            )
+          }
+          break;
+        case Gestures.SHOW_COMMENT_MODAL: 
+          setModalVisible(true)
+          break;
+        default: 
+          console.log('gesture is not defined')
       }
       return true
     }
