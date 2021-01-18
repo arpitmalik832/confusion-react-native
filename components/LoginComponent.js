@@ -180,7 +180,7 @@ class RegisterTab extends Component {
     if(cameraPermission.status === 'granted') {
       let capturedImage = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
-        aspect: [1, 1]
+        aspect: [4, 3]
       })
 
       if(!capturedImage.cancelled) {

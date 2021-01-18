@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { StyleSheet, Platform, View, Text, Image } from 'react-native'
+import { StyleSheet, Platform, View, Text, Image, ToastAndroid } from 'react-native'
+import NetInfo from '@react-native-community/netinfo'
 import { Icon } from 'react-native-elements'
 import Login from './LoginComponent'
 import Home from './HomeComponent'
@@ -470,6 +471,55 @@ class Main extends Component {
     this.props.fetchComments()
     this.props.fetchLeaders()
     this.props.fetchPromos()
+
+    NetInfo.addEventListener(state =>
+      this.handleConnectivityChange(state)
+    )
+  }
+
+  handleConnectivityChange = (connectionInfo) => {
+    switch(connectionInfo.type) {
+      case 'none':
+        ToastAndroid.show(
+          'You are now offline!',
+          ToastAndroid.LONG
+        )
+        break
+      case 'wifi':
+        ToastAndroid.show(
+          'You are now connected to WiFi!'
+          + '\nDetails -> '
+          + '\nisConnectionExpensive: ' + connectionInfo.details.isConnectionExpensive
+          + '\nssid: ' + connectionInfo.details.ssid
+          + '\nbssid: ' + connectionInfo.details.bssid
+          + '\nstrength: ' + connectionInfo.details.strength
+          + '\nipAddress: ' + connectionInfo.details.ipAddress
+          + '\nsubnet: ' + connectionInfo.details.subnet
+          + '\nfrequency: ' + connectionInfo.details.frequency,
+          ToastAndroid.LONG
+        )
+        break
+      case 'cellular':
+        ToastAndroid.show(
+          'You are now connected to Cellular!'
+          + '\nDetails -> ' 
+          + '\nisConnectionExpensive: ' + connectionInfo.details.isConnectionExpensive
+          + '\ncellularGeneration: ' + connectionInfo.details.cellularGeneration
+          + '\ncarrier: ' + connectionInfo.details.carrier,
+          ToastAndroid.LONG
+        )
+        break
+      case 'unknown':
+        ToastAndroid.show(
+          'You now have an unknown connection!'
+          + '\nDetails -> ' 
+          + '\nisConnectionExpensive: ' + connectionInfo.details.isConnectionExpensive,
+          ToastAndroid.LONG
+        )
+        break
+      default:
+        break;
+    }
   }
 
   render() {
