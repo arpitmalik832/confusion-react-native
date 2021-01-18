@@ -5,6 +5,8 @@ import * as SecureStore from 'expo-secure-store'
 import * as ImagePicker from 'expo-image-picker'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { baseUrl } from '../shared/baseUrl'
+import * as ImageManipulator from 'expo-image-manipulator'
+import { Asset } from 'expo-asset'
 
 const Tab = createBottomTabNavigator()
 
@@ -158,6 +160,21 @@ class RegisterTab extends Component {
     }
   }
 
+  processImage = async (imageUri) => {
+    let processedImage = await ImageManipulator.manipulateAsync(
+      imageUri,
+      [
+        {
+          resize: { width: 400 }
+        }
+      ],
+      {
+        format: 'png'
+      }
+    )
+    this.setState({ imageUrl: processedImage.uri })
+  } 
+
   getImageFromCamera = async () => {
     const cameraPermission = await ImagePicker.requestCameraPermissionsAsync()
     if(cameraPermission.status === 'granted') {
@@ -167,7 +184,7 @@ class RegisterTab extends Component {
       })
 
       if(!capturedImage.cancelled) {
-        this.setState({ imageUrl: capturedImage.uri })
+        this.processImage(capturedImage.uri)
       }
     } else {
       Alert.alert(
