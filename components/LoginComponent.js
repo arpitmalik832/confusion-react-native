@@ -203,6 +203,34 @@ class RegisterTab extends Component {
     }
   }
 
+  getImageFromGallery = async () => {
+    const galleryPermission = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if(galleryPermission.status === 'granted') {
+      let selectedImage = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [4, 3]
+      })
+
+      if(!selectedImage.cancelled) {
+        this.processImage(selectedImage.uri)
+      }
+    } else {
+      Alert.alert(
+        'Permission is Required',
+        'Gallery permission is required to continue',
+        [
+          {
+            text: 'Ok',
+            style: 'default'
+          }
+        ],
+        {
+          cancelable: false
+        }
+      )
+    }
+  }
+
   handleRegister = () => {
     console.log(JSON.stringify(this.state))
     if(Platform.OS === 'web') {
@@ -254,6 +282,11 @@ class RegisterTab extends Component {
             title='Camera'
             buttonStyle={[styles.backgroundColorPrimary]}
             onPress={this.getImageFromCamera}
+          />
+          <Button
+            title='Gallery'
+            buttonStyle={[styles.backgroundColorPrimary]}
+            onPress={this.getImageFromGallery}
           />
         </View>
         <Input
@@ -429,6 +462,8 @@ const styles = StyleSheet.create({
   imageContainer: {
     flex: 1,
     flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
     margin: 20
   },
   image: {

@@ -1,22 +1,24 @@
 import React, { Component } from 'react'
-import { Platform, StyleSheet, View, ScrollView, Text, Switch, Button, Modal } from 'react-native'
+import { Platform, StyleSheet, View, ScrollView, Text, Switch, Button, Modal, Alert, ToastAndroid } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Picker } from '@react-native-picker/picker'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import * as Animatable from 'react-native-animatable'
-import { Alert } from 'react-native'
+import * as Calendar from 'expo-calendar'
 
 class Reservation extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
+      date: new Date(),
+      time: new Date(),
       mode: 'date',
       show: false,
       showModal: false,
       guests: '1',
       smoking: false,
-      date: '',
-      time: ''
+      datetime: new Date()
     }
   }
 
@@ -30,8 +32,9 @@ class Reservation extends Component {
     this.setState({ 
       guests: '1',
       smoking: false,
-      date: '',
-      time: ''
+      datetime: new Date(),
+      date: new Date(),
+      time: new Date()
     })
   }
 
@@ -44,23 +47,22 @@ class Reservation extends Component {
     :
     Alert.alert(
       'Your Reservation OK?',
-      'Number of Guests: '+this.state.guests+
-      '\nSmoking?: '+this.state.smoking+
-      '\nDate: '+this.state.date+
-      '\nTime: '+this.state.time,
+      'Number of Guests: ' + this.state.guests +
+      '\nSmoking?: ' + this.state.smoking +
+      '\nDate and Time: ' + this.getDateTime(),
       [
         {
           text: 'Cancel',
           onPress: () => {
-            console.log('Cancel Pressed')
           },
           style: 'cancel'
         },
         {
             text: 'Ok',
-            onPress: () => {
+            onPress: async () => {
               console.log(JSON.stringify(this.state))
               this.toggleModal()
+              await this.createEvent()
             },
             style: 'default'
         }
@@ -71,22 +73,112 @@ class Reservation extends Component {
     )
   }
 
-  showDatePicker = () => {
-    this.setState({ mode: 'date' })
-    this.setState({ show: true })
+  getDefaultCalendarSource = async () => {
+    const calendars = await Calendar.getCalendarsAsync();
+    const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
+    return defaultCalendars[0].source;
   }
 
-  showTimePicker = () => {
-    this.setState({ mode: 'time' })
-    this.setState({ show: true })
+  getCalendarSourceId = async () => {
+    const defaultCalendarSource = (Platform.OS === 'ios') ? 
+    await this.getDefaultCalendarSource()
+    :
+    { 
+      isLocalAccount: true, 
+      name: 'Con Fusion Calendar' 
+    }
+
+    const calendarSourceId = await Calendar.createCalendarAsync({
+      title: 'Con Fusion Reservation Calendar',
+      color: '#512DA8',
+      entityType: Calendar.EntityTypes.EVENT,
+      sourceId: defaultCalendarSource.id,
+      source: defaultCalendarSource,
+      name: 'Con Fusion Reservation Calendar',
+      ownerAccount: 'personal',
+      accessLevel: Calendar.CalendarAccessLevel.OWNER
+    })
+    return calendarSourceId
+  }
+
+  createEvent = async () => {
+    const calendarPermission = await Calendar.requestCalendarPermissionsAsync()
+    if(calendarPermission.status === 'granted') {
+      const calendarSourceId = await this.getCalendarSourceId()
+
+      Calendar.createEventAsync(
+        calendarSourceId,
+        {
+          title: 'Con Fusion Table Reservation',
+          notes: 'Please read our guidelines from the website before coming to the resturant',
+          startDate: this.state.datetime,
+          endDate: this.state.datetime,
+          location: '121, Clear Water Bay Road, Clear Water Bay, Kowloon, HONG KONG'
+        }
+      )
+      .then(() => {
+        ToastAndroid.show(
+          'Event is created in your calendar',
+          ToastAndroid.LONG
+        )
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    }
+  }
+
+  showDateTimePicker = () => {
+    this.setState({ 
+      mode: 'date',
+      show: true 
+    })
   }
 
   onDateChange = (event, value) => {
-    this.setState({ 
-      [this.state.mode]: value.toString(),
-      mode: 'date',
+    this.setState({
       show: false
     })
+    if(value !== undefined) {
+      if(this.state.mode === 'date') {
+        this.setState({
+          date: value,
+          mode: 'time',
+          show: true
+        })
+      } else {
+        this.setState({
+          time: value,
+          mode: 'date',
+          show: false
+        })
+      }
+      this.setState({
+        datetime: this.combineDateTime()
+      })
+    }
+  }
+
+  combineDateTime = () => {
+    return new Date(
+      this.state.date.getFullYear(),
+      this.state.date.getMonth(),
+      this.state.date.getDate(),
+      this.state.time.getHours(),
+      this.state.time.getMinutes(),
+      this.state.time.getSeconds(),
+      this.state.time.getMilliseconds()
+    )
+  }
+
+  getDateTime = () => {
+    const dd = String(this.state.datetime.getDate()).padStart(2, '0')
+    const mm = String(this.state.datetime.getMonth() + 1).padStart(2, '0')
+    const yyyy = this.state.datetime.getFullYear()
+    const hh = String(this.state.datetime.getHours()).padStart(2, '0')
+    const MM = String(this.state.datetime.getMinutes()).padStart(2, '0')
+    const ss = String(this.state.datetime.getSeconds()).padStart(2, '0')
+    return dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + MM + ':' + ss
   }
 
   render() {
@@ -162,39 +254,26 @@ class Reservation extends Component {
                 <Text
                   style={[styles.formLabel]}  
                 >
-                  Date
+                  Date and Time
                 </Text>
-                <Button
-                  title="Pick Date"
+                <TouchableOpacity
                   style={[styles.formItem]}
-                  color="#512DA8"
-                  onPress={() => this.showDatePicker()}
-                />
-              </View>
-              <View 
-                style={[styles.formRow]}
-              > 
-                <Text
-                  style={[styles.formLabel]}  
+                  onPress={this.showDateTimePicker}
                 >
-                  Time
-                </Text>
-                <Button
-                  title="Pick Time"
-                  style={[styles.formItem]}
-                  color="#512DA8"
-                  onPress={() => this.showTimePicker()}
-                />
-                {
-                  this.state.show &&
-                  <DateTimePicker
-                    value={new Date(2021, 0, 1)}
-                    mode={this.state.mode}
-                    display='default'
-                    onChange={(event, value) => this.onDateChange(event, value)}
-                  />
-                }
+                  <Text>
+                    {this.getDateTime()}
+                  </Text>
+                </TouchableOpacity>
               </View>
+              {
+                this.state.show &&
+                <DateTimePicker
+                  value={new Date()}
+                  mode={this.state.mode}
+                  display='default'
+                  onChange={(event, value) => this.onDateChange(event, value)}
+                />
+              }
             </>
           }
           <View 
@@ -246,12 +325,7 @@ class Reservation extends Component {
                 <Text
                   style={[styles.modalText]}
                 >
-                  Date: {this.state.date}
-                </Text>
-                <Text
-                  style={[styles.modalText]}
-                >
-                  Time: {this.state.time}
+                  Date and Time: {this.getDateTime()}
                 </Text>
                 <Button
                   title="close"
