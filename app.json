@@ -1,10 +1,14 @@
 {
-  "name": "confusion-react-native",
-  "displayName": "confusion-react-native",
+  "name": "Con Fusion",
+  "displayName": "Con Fusion",
   "expo": {
-    "name": "confusion-react-native",
-    "slug": "confusion-react-native",
+    "name": "Con Fusion",
+    "slug": "Con-Fusion",
     "version": "1.0.0",
+    "android": {
+      "package": "com.food.confusion",
+      "versionCode": 1
+    },
     "assetBundlePatterns": [
       "**/*"
     ]
