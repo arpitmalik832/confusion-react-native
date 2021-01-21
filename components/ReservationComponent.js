@@ -13,22 +13,22 @@ class Reservation extends Component {
     this.state = {
       date: new Date(),
       time: new Date(),
-      mode: 'date',
-      show: false,
-      showModal: false,
+      modeDateTimePicker: 'date',
+      showDateTimePicker: false,
+      showReservation: false,
       guests: '1',
       smoking: false,
       datetime: new Date()
     }
   }
 
-  toggleModal = () => {
-    this.setState({ 
-      showModal: !this.state.showModal
+  changeShowReservation = () => {
+    this.setState({
+      showReservation: !this.state.showReservation
     })
   }
 
-  resetForm = () => {
+  resetReservationForm = () => {
     this.setState({ 
       guests: '1',
       smoking: false,
@@ -38,39 +38,35 @@ class Reservation extends Component {
     })
   }
 
-  handleReservation = () => {
-    Platform.OS === 'web' ?
-    () => {
+  submitReservation = () => {
+    if(Platform.OS === 'web') {
       console.log(JSON.stringify(this.state))
-      this.resetForm()
-    }
-    :
-    Alert.alert(
-      'Your Reservation OK?',
-      'Number of Guests: ' + this.state.guests +
-      '\nSmoking?: ' + this.state.smoking +
-      '\nDate and Time: ' + this.getDateTime(),
-      [
-        {
+      this.resetReservationForm()
+    } else {
+      Alert.alert(
+        'Your Reservation OK?',
+        'Number of Guests: ' + this.state.guests +
+        '\nSmoking?: ' + this.state.smoking +
+        '\nDate and Time: ' + this.getDateTime(),
+        [{
           text: 'Cancel',
-          onPress: () => {
-          },
+          onPress: () => console.log('Cancel Pressed'),
           style: 'cancel'
         },
         {
-            text: 'Ok',
-            onPress: async () => {
-              console.log(JSON.stringify(this.state))
-              this.toggleModal()
-              await this.createEvent()
-            },
-            style: 'default'
+          text: 'Ok',
+          onPress: async () => {
+            console.log(JSON.stringify(this.state))
+            this.changeShowReservation()
+            await this.createCalenderEvent()
+          },
+          style: 'default'
+        }],
+        {
+          cancelable: false
         }
-      ],
-      {
-        cancelable: false
-      }
-    )
+      )
+    }
   }
 
   getDefaultCalendarSource = async () => {
@@ -82,8 +78,7 @@ class Reservation extends Component {
   getCalendarSourceId = async () => {
     const defaultCalendarSource = (Platform.OS === 'ios') ? 
     await this.getDefaultCalendarSource()
-    :
-    { 
+    :{ 
       isLocalAccount: true, 
       name: 'Con Fusion Calendar' 
     }
@@ -101,7 +96,7 @@ class Reservation extends Component {
     return calendarSourceId
   }
 
-  createEvent = async () => {
+  createCalenderEvent = async () => {
     const calendarPermission = await Calendar.requestCalendarPermissionsAsync()
     if(calendarPermission.status === 'granted') {
       const calendarSourceId = await this.getCalendarSourceId()
@@ -128,29 +123,29 @@ class Reservation extends Component {
     }
   }
 
-  showDateTimePicker = () => {
+  showDatePicker = () => {
     this.setState({ 
-      mode: 'date',
-      show: true 
+      modeDateTimePicker: 'date',
+      showDateTimePicker: true 
     })
   }
 
   onDateChange = (event, value) => {
     this.setState({
-      show: false
+      showDateTimePicker: false
     })
     if(value !== undefined) {
-      if(this.state.mode === 'date') {
+      if(this.state.modeDateTimePicker === 'date') {
         this.setState({
           date: value,
-          mode: 'time',
-          show: true
+          modeDateTimePicker: 'time',
+          showDateTimePicker: true
         })
       } else {
         this.setState({
           time: value,
-          mode: 'date',
-          show: false
+          modeDateTimePicker: 'date',
+          showDateTimePicker: false
         })
       }
       this.setState({
@@ -187,102 +182,126 @@ class Reservation extends Component {
         animation='zoomIn'
         duration={2000}
       >
-        <ScrollView>
+        <ScrollView
+          contentContainerStyle={[styles.padding_height_5]}
+        >
           <View 
-            style={[styles.formRow]}
+            style={[
+              {
+                flexDirection: 'row'
+              },
+              styles.in_center,
+              styles.padding_width_20,
+              styles.padding_height_5
+            ]}
           >
             <Text
-              style={[styles.formLabel]}  
+              style={[{
+                flex: 2,
+                fontSize: 18,
+                color: 'black'
+              }]}  
             >
               Number of Guests
             </Text>
             <Picker
-              style={[styles.formItem]}
+              style={[{
+                flex: 1,
+                height: '100%'
+              }]}
               selectedValue={this.state.guests}
               onValueChange={(itemValue, itemIndex) => this.setState({ guests: itemValue })}
             >
-              <Picker.Item
-                label='1'
-                value='1'
-              />
-              <Picker.Item
-                label='2'
-                value='2'
-              />
-              <Picker.Item
-                label='3'
-                value='3'
-              />
-              <Picker.Item
-                label='4'
-                value='4'
-              />
-              <Picker.Item
-                label='5'
-                value='5'
-              />
-              <Picker.Item
-                label='6'
-                value='6'
-              />
+              <Picker.Item label='1' value='1' />
+              <Picker.Item label='2' value='2' />
+              <Picker.Item label='3' value='3' />
+              <Picker.Item label='4' value='4' />
+              <Picker.Item label='5' value='5' />
+              <Picker.Item label='6' value='6' />
             </Picker>
           </View>
           <View 
-            style={[styles.formRow]}
+            style={[
+              {
+                flexDirection: 'row'
+              },
+              styles.in_center,
+              styles.padding_width_20,
+              styles.padding_height_5
+            ]}
           >
             <Text
-              style={[styles.formLabel]}  
+              style={[{
+                flex: 2,
+                fontSize: 18,
+                color: 'black'
+              }]}  
             >
               Smoking/Non-smoking?
             </Text>
             <Switch
-              style={[styles.formSwitch]}
               value={this.state.smoking}
               onTintColor='#512DA8'
               onValueChange={(value) => this.setState({ smoking: value })}
             />
           </View>
-          {
-            Platform.OS === 'web' ?
-            <>
-            </>
-            :
-            <>
-              <View 
-                style={[styles.formRow]}
+          {(
+            Platform.OS !== 'web' &&
+            <View 
+              style={[
+                {
+                  flexDirection: 'row'
+                },
+                styles.in_center,
+                styles.padding_width_20,
+                styles.padding_height_5
+              ]}
+            >
+              <Text
+                style={[{
+                  flex: 2,
+                  fontSize: 18,
+                  color: 'black'
+                }]}  
+              >
+                Date and Time
+              </Text>
+              <TouchableOpacity
+                style={[{
+                  flex: 1
+                }]}
+                onPress={this.showDatePicker}
               >
                 <Text
-                  style={[styles.formLabel]}  
+                  style={[{
+                    fontSize: 14
+                  }]}
                 >
-                  Date and Time
+                  {this.getDateTime()}
                 </Text>
-                <TouchableOpacity
-                  style={[styles.formItem]}
-                  onPress={this.showDateTimePicker}
-                >
-                  <Text>
-                    {this.getDateTime()}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              {
-                this.state.show &&
+              </TouchableOpacity>
+              {(
+                this.state.showDateTimePicker &&
                 <DateTimePicker
                   value={new Date()}
-                  mode={this.state.mode}
+                  mode={this.state.modeDateTimePicker}
                   display='default'
                   onChange={(event, value) => this.onDateChange(event, value)}
                 />
-              }
-            </>
-          }
+              )}
+            </View>
+          )}
           <View 
-            style={[styles.formRow]}
+            style={[
+              {},
+              styles.padding_width_20,
+              styles.padding_height_10
+            ]}
           >
             <Button
               title='Reserve'
               color='#512DA8'
-              onPress={() => this.handleReservation()}
+              onPress={() => this.submitReservation()}
               accessibilityLabel= 'Learn more about this purple button'
             />
           </View>
@@ -294,20 +313,20 @@ class Reservation extends Component {
             <Modal
               animationType='slide'
               transparent={false}
-              visible={this.state.showModal}
+              visible={this.state.showReservation}
               onDismiss={() => { 
-                this.toggleModal()
-                this.resetForm()
+                this.changeShowReservation()
+                this.resetReservationForm()
               }}
               onRequestClose={() => { 
-                this.toggleModal()
-                this.resetForm()
+                this.changeShowReservation()
+                this.resetReservationForm()
               }}
             >
               <View
-                style={[styles.modal]}
+                style={[styles.modalContainer]}
               >
-                <Text 
+                <Text
                   style={[styles.modalTitle]}
                 >
                   Your Reservation
@@ -330,7 +349,7 @@ class Reservation extends Component {
                 <Button
                   title="close"
                   color="#512DA8"
-                  onPress={() => { this.toggleModal(); this.resetForm(); }}
+                  onPress={() => { this.changeShowReservation(); this.resetReservationForm(); }}
                 />
               </View>
             </Modal>
@@ -342,24 +361,47 @@ class Reservation extends Component {
 }
 
 const styles = StyleSheet.create({
-  formRow: {
+  padding_height_5: {
+    paddingTop: 5,
+    paddingBottom: 5
+  },
+  padding_width_5: {
+    paddingLeft: 5,
+    paddingRight: 5
+  },
+  padding_height_10: {
+    paddingTop: 10,
+    paddingBottom: 10
+  },
+  padding_width_10: {
+    paddingLeft: 10,
+    paddingRight: 10
+  },
+  padding_width_20: {
+    paddingLeft: 20,
+    paddingRight: 20
+  },
+  margin_height_5: {
+    marginTop: 5,
+    marginBottom: 5
+  },
+  margin_width_5: {
+    marginLeft: 5,
+    marginRight: 5
+  },
+  margin_height_10: {
+    marginTop: 10,
+    marginBottom: 10
+  },
+  margin_width_10: {
+    marginLeft: 10,
+    marginRight: 10
+  },
+  in_center: {
     alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    flexDirection: 'row',
-    margin: 20
+    justifyContent: 'center'
   },
-  formLabel: {
-    fontSize: 18,
-    flex: 2
-  },
-  formItem: {
-    flex: 1
-  },
-  formSwitch: {
-
-  },
-  modal: {
+  modalContainer: {
     justifyContent: 'center',
     margin: 20
   },
@@ -369,7 +411,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#512DA8',
     textAlign: 'center',
     color: 'white',
-    marginBottom: 20
   },
   modalText: {
     fontSize: 18,

@@ -2,8 +2,8 @@ import React from 'react'
 import { View, StyleSheet, Animated, TouchableOpacity } from 'react-native'
 import { ListItem, Avatar } from'react-native-elements'
 import Swipeable from 'react-native-gesture-handler/Swipeable'
-import { baseUrl } from '../shared/baseUrl'
 import * as Animatable from 'react-native-animatable'
+import { baseUrl } from '../shared/baseUrl'
 
 const LeftActions = (progress, dragX) => {
   const scale = dragX.interpolate({
@@ -81,12 +81,12 @@ const CustomListItem = ({ item, index, navigate, rightOnPress }) => (
         />
         <ListItem.Content>
           <ListItem.Title
-            style={[styles.listItemTitle]}
+            style={[styles.bold]}
           >
             {item.name}
           </ListItem.Title>
           <ListItem.Subtitle
-            style={[styles.listItemSubtitle]}
+            style={[styles.color_black]}
           >
             {item.description}
           </ListItem.Subtitle>
@@ -112,11 +112,11 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20
   },
-  listItemTitle: {
+  bold: {
     fontWeight: 'bold'
   },
-  listItemSubtitle: {
-    color: '#000' 
+  color_black: {
+    color: 'black'
   }
 });
 

@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Text, ScrollView, Image, Platform, Alert } from 'react-native'
+import { StyleSheet, View, ScrollView, Image, Platform, Alert, Text } from 'react-native'
 import { Icon, Input, CheckBox, Button } from 'react-native-elements'
-import * as SecureStore from 'expo-secure-store'
-import * as ImagePicker from 'expo-image-picker'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { baseUrl } from '../shared/baseUrl'
 import * as ImageManipulator from 'expo-image-manipulator'
-import { Asset } from 'expo-asset'
+import * as ImagePicker from 'expo-image-picker'
+import * as SecureStore from 'expo-secure-store'
+import { baseUrl } from '../shared/baseUrl'
 
 const Tab = createBottomTabNavigator()
 
@@ -75,7 +74,11 @@ class LoginTab extends Component {
 
   render() {
     return (
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={[
+          styles.padding_height_5
+        ]}
+      >
         <Input
           placeholder='Username'
           leftIcon={{
@@ -84,7 +87,12 @@ class LoginTab extends Component {
           }}
           onChangeText={(username) => this.setState({ username })}
           value={this.state.username}
-          containerStyle={[styles.firstFormInput]}
+          containerStyle={[
+            {
+              marginTop: 5
+            },
+            styles.padding_width_20
+          ]}
         />
         <Input
           placeholder='Password'
@@ -94,47 +102,58 @@ class LoginTab extends Component {
           }}
           onChangeText={(password) => this.setState({ password })}
           value={this.state.password}
-          containerStyle={[styles.formInput]}
+          containerStyle={[styles.padding_width_20]}
         />
         <CheckBox
           title='Remember Me'
           center
           checked={this.state.remember}
           onPress={() => this.setState({ remember: !this.state.remember })}
-          containerStyle={[ styles.lastFormInput, styles.nullBackgroundColor ]}
+          containerStyle={[ 
+            {
+              marginBottom: 5
+            },
+            styles.background_color_null 
+          ]}
         />
         <View
-          style={[styles.formButton]}
+          style={[
+            styles.margin_height_5,
+            styles.margin_width_20
+          ]}
         >
           <Button
             title='Login'
-            buttonStyle={[styles.backgroundColorPrimary]}
+            buttonStyle={[styles.background_color_primary]}
             icon={
               <Icon
                 name='sign-in'
                 type='font-awesome'
                 size={24}
                 color='white'
-                style={[styles.buttonIcon]}
+                style={[styles.margin_width_10]}
               />
             }
             onPress={() => this.handleLogin()}
           />
         </View>
         <View
-          style={[styles.formButton]}
+          style={[
+            styles.margin_height_5,
+            styles.margin_width_20
+          ]}
         >
           <Button
             title='Register'
-            buttonStyle={[styles.nullBackgroundColor]}
-            titleStyle={[styles.colorPrimary]}
+            buttonStyle={[styles.background_color_null]}
+            titleStyle={[styles.color_primary]}
             icon={
               <Icon
                 name='user-plus'
                 type='font-awesome'
                 size={24}
                 color='#512DA8'
-                style={[styles.buttonIcon]}
+                style={[styles.margin_width_10]}
               />
             }
             onPress={() => this.props.navigation.navigate('Register')}
@@ -237,7 +256,11 @@ class RegisterTab extends Component {
       if(!this.state.remember) {
         this.setState({
           username: '',
-          password: ''
+          password: '',
+          firstname: '',
+          lastname: '',
+          email: '',
+          imageUrl: baseUrl + 'images/logo.png'
         })
       }
     } else {
@@ -257,7 +280,11 @@ class RegisterTab extends Component {
           .then(() => {
             this.setState({
               username: '',
-              password: ''
+              password: '',
+              firstname: '',
+              lastname: '',
+              email: '',
+              imageUrl: baseUrl + 'images/logo.png'
             })
           })
           .catch((error) => {
@@ -269,9 +296,15 @@ class RegisterTab extends Component {
 
   render() {
     return (
-      <ScrollView>
+      <ScrollView
+        contentContainerStyle={[styles.margin_height_5]}
+      >
         <View
-          style={[styles.imageContainer]}
+          style={[
+            styles.image_container,
+            styles.margin_height_5,
+            styles.margin_width_20
+          ]}
         >
           <Image
             source={{ uri: this.state.imageUrl }}
@@ -280,12 +313,12 @@ class RegisterTab extends Component {
           />
           <Button
             title='Camera'
-            buttonStyle={[styles.backgroundColorPrimary]}
+            buttonStyle={[styles.background_color_primary]}
             onPress={this.getImageFromCamera}
           />
           <Button
             title='Gallery'
-            buttonStyle={[styles.backgroundColorPrimary]}
+            buttonStyle={[styles.background_color_primary]}
             onPress={this.getImageFromGallery}
           />
         </View>
@@ -297,7 +330,12 @@ class RegisterTab extends Component {
           }}
           onChangeText={(username) => this.setState({ username })}
           value={this.state.username}
-          containerStyle={[styles.firstFormInput]}
+          containerStyle={[
+            {
+              marginTop: 5
+            },
+            styles.padding_width_20
+          ]}
         />
         <Input
           placeholder='Password'
@@ -307,7 +345,7 @@ class RegisterTab extends Component {
           }}
           onChangeText={(password) => this.setState({ password })}
           value={this.state.password}
-          containerStyle={[styles.formInput]}
+          containerStyle={[styles.padding_width_20]}
         />
         <Input
           placeholder='First Name'
@@ -317,7 +355,7 @@ class RegisterTab extends Component {
           }}
           onChangeText={(firstname) => this.setState({ firstname })}
           value={this.state.firstname}
-          containerStyle={[styles.formInput]}
+          containerStyle={[styles.padding_width_20]}
         />
         <Input
           placeholder='Last Name'
@@ -327,7 +365,7 @@ class RegisterTab extends Component {
           }}
           onChangeText={(lastname) => this.setState({ lastname })}
           value={this.state.lastname}
-          containerStyle={[styles.formInput]}
+          containerStyle={[styles.padding_width_20]}
         />
         <Input
           placeholder='Email'
@@ -337,28 +375,36 @@ class RegisterTab extends Component {
           }}
           onChangeText={(email) => this.setState({ email })}
           value={this.state.email}
-          containerStyle={[styles.formInput]}
+          containerStyle={[styles.padding_width_20]}
         />
         <CheckBox
           title='Remember Me'
           center
           checked={this.state.remember}
           onPress={() => this.setState({ remember: !this.state.remember })}
-          containerStyle={[styles.lastFormInput, styles.nullBackgroundColor]}
+          containerStyle={[
+            {
+              marginBottom: 5
+            },
+            styles.background_color_null
+          ]}
         />
         <View
-          style={[styles.formButton]}
+          style={[
+            styles.margin_height_5,
+            styles.margin_width_20
+          ]}
         >
           <Button
             title='Register'
-            buttonStyle={[styles.backgroundColorPrimary]}
+            buttonStyle={[styles.background_color_primary]}
             icon={
               <Icon
                 name='user-plus'
                 type='font-awesome'
                 size={24}
                 color='white'
-                style={[styles.buttonIcon]}
+                style={[styles.margin_width_10]}
               />
             }
             onPress={() => this.handleRegister()}
@@ -369,14 +415,25 @@ class RegisterTab extends Component {
   }
 }
 
-const Login = () => {
+const Login = (props) => {
   return (
     <Tab.Navigator
       tabBarOptions={{
         activeBackgroundColor: '#9575CD',
         inactiveBackgroundColor: '#D1C4E9',
         activeTintColor: 'white',
-        inactiveTintColor: 'gray'
+        inactiveTintColor: 'gray',
+        labelStyle: {
+          fontSize: 12  
+        },
+        tabStyle: {
+          height: '100%',
+          paddingTop: 5,
+          paddingBottom: 5
+        },
+        style: {
+          height: '8%'
+        }
       }}
     >
       <Tab.Screen
@@ -422,52 +479,64 @@ const Login = () => {
 }
 
 const styles = StyleSheet.create({
-  colorPrimary: {
-    color: '#512DA8'
+  padding_height_5: {
+    paddingTop: 5,
+    paddingBottom: 5
   },
-  backgroundColorPrimary: {
-    backgroundColor: '#512DA8'
+  padding_width_5: {
+    paddingLeft: 5,
+    paddingRight: 5
   },
-  nullBackgroundColor: {
-    backgroundColor: null
+  padding_height_10: {
+    paddingTop: 10,
+    paddingBottom: 10
   },
-  firstFormInput: {
-    marginTop: 20,
-    marginBottom: 5,
-    paddingStart: 20,
-    paddingEnd: 20
+  padding_width_10: {
+    paddingLeft: 10,
+    paddingRight: 10
   },
-  formInput: {
+  padding_width_20: {
+    paddingLeft: 20,
+    paddingRight: 20
+  },
+  margin_height_5: {
     marginTop: 5,
-    marginBottom: 5,
-    paddingStart: 20,
-    paddingEnd: 20
+    marginBottom: 5
   },
-  lastFormInput: {
-    marginTop: 5,
-    marginBottom: 10,
-    paddingStart: 20,
-    paddingEnd: 20
+  margin_width_5: {
+    marginLeft: 5,
+    marginRight: 5
   },
-  formButton: {
+  margin_height_10: {
     marginTop: 10,
-    marginBottom: 20,
-    marginStart: 20,
-    marginEnd: 20
+    marginBottom: 10
   },
-  buttonIcon: {
+  margin_width_10: {
     marginLeft: 10,
     marginRight: 10
   },
-  imageContainer: {
-    flex: 1,
+  color_black: {
+    color: 'black'
+  },
+  color_primary: {
+    color: '#512DA8'
+  },
+  background_color_null: {
+    backgroundColor: null
+  },
+  background_color_primary: {
+    backgroundColor: '#512DA8'
+  },
+  margin_width_20: {
+    marginLeft: 20,
+    marginRight: 20
+  },
+  image_container: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    alignItems: 'center',
-    margin: 20
+    alignItems: 'center'
   },
   image: {
-    margin: 10,
     width: 80,
     height: 60
   }

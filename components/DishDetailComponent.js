@@ -1,11 +1,10 @@
-import React, { Component, useState } from 'react'
-import { Platform, StyleSheet, View, Text, ScrollView, FlatList, Modal, Alert, PanResponder, Share } from 'react-native'
+import React, { useState } from 'react'
+import { Platform, StyleSheet, View, Text, ScrollView, Modal, Alert, PanResponder, Share, Button } from 'react-native'
 import { Card, Icon, Rating, Input } from 'react-native-elements'
 import { connect } from 'react-redux'
-import { baseUrl } from '../shared/baseUrl'
-import { postFavorite, deleteFavorite, postComment } from '../redux/ActionCreators'
-import { Button } from 'react-native'
 import * as Animatable from 'react-native-animatable'
+import { postFavorite, deleteFavorite, postComment } from '../redux/ActionCreators'
+import { baseUrl } from '../shared/baseUrl'
 
 const Gestures = {
   SHOW_COMMENT_MODAL: 'SHOW_COMMENT_MODAL',
@@ -27,22 +26,24 @@ const mapDispatchToProps = dispatch => ({
 })
 
 function RenderDish(props) {
-  const [modalVisible, setModalVisible] = useState(false)
+  const [commentModal, showCommentModal] = useState(false)
   const [author, setAuthor] = useState('')
   const [rating, setRating] = useState(3)
   const [comment, setComment] = useState('')
   const [ref, setRef] = useState(null)
 
-  const resetForm = () => {
+  const dish = props.dish
+
+  const resetCommentForm = () => {
     setAuthor('')
     setRating(3)
     setComment('')
   }
 
-  const handleComment = () => {
+  const postComment = () => {
     props.postComment(author, rating, comment)
-    resetForm()
-    setModalVisible(false)
+    resetCommentForm()
+    showCommentModal(false)
   }
 
   const shareDish = (title, message, url) => {
@@ -61,11 +62,9 @@ function RenderDish(props) {
   const recognizeDrag = ({ moveX, moveY, dx, dy}) => {
     if(dx < -200) //right to left
       return Gestures.SHOW_FAVORITE_ALERT
-    else if(dx > 200)
+    else if(dx > 200) //left to right
       return Gestures.SHOW_COMMENT_MODAL
   }
-
-  const dish = props.dish
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: (e, gestureState) => {
@@ -80,7 +79,7 @@ function RenderDish(props) {
       switch(recognizeDrag(gestureState)) {
         case Gestures.SHOW_FAVORITE_ALERT:
           if(Platform.OS === 'web') {
-            props.favorite ? props.unMarkFavorite() : props.markFavorite()
+            props.favorite ? props.deleteFavorite() : props.postFavorite()
           } else { 
             Alert.alert(
               (props.favorite ? 'Delete from ': 'Add to ') + 'Favorites?',
@@ -93,7 +92,7 @@ function RenderDish(props) {
                 },
                 {
                   text: 'Ok',
-                  onPress: () => props.favorite ? props.unMarkFavorite() : props.markFavorite(),
+                  onPress: () => props.favorite ? props.deleteFavorite() : props.postFavorite(),
                   style: 'default'
                 }
               ],
@@ -104,7 +103,7 @@ function RenderDish(props) {
           }
           break;
         case Gestures.SHOW_COMMENT_MODAL: 
-          setModalVisible(true)
+          showCommentModal(true)
           break;
         default: 
           console.log('gesture is not defined')
@@ -123,68 +122,86 @@ function RenderDish(props) {
         {...panResponder.panHandlers}
       >
         <Card 
-          containerStyle={[styles.card]}
+          containerStyle={[
+            {
+              padding: 0
+            },
+            styles.radius_10,
+            styles.margin_height_5
+          ]}
         >
           <Card.Image 
             source={{ uri: baseUrl + dish.image }} 
-            style={[styles.cardImage]}
+            style={[
+              {
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10
+              },
+              styles.items_in_center
+            ]}
           >
             <Card.FeaturedTitle>
               {dish.name}
             </Card.FeaturedTitle>    
             <View
-              style={[styles.iconsContainer]}
+              style={[
+                {
+                  flexDirection: 'row'
+                },
+                styles.items_in_center
+              ]}
             >
               <Icon
-                containerStyle={[styles.icon]}
+                containerStyle={[styles.margin_width_5]}
                 name={ props.favorite ? 'heart' : 'heart-o' }
                 type='font-awesome'
                 color='#0FF'
-                onPress={() => props.favorite ? props.unMarkFavorite() : props.markFavorite()}
+                onPress={() => props.favorite ? props.deleteFavorite() : props.postFavorite()}
               />
-              {
-                Platform.OS === 'web' ?
-                <>
-                </>
-                :
+              {(
+                Platform.OS !== 'web' && 
                 <>
                   <Icon
-                    containerStyle={[styles.icon]}
+                    containerStyle={[styles.margin_width_5]}
                     name='pencil'
                     type='font-awesome'
                     color='#512AD8'
-                    onPress={() => setModalVisible(true)}
+                    onPress={() => showCommentModal(true)}
                   />
                   <Icon
-                    containerStyle={[styles.icon]}
+                    containerStyle={[styles.margin_width_5]}
                     name='share'
                     type='font-awesome'
                     color='#512DA8'
                     onPress={() => shareDish(dish.name, dish.description, baseUrl + dish.image)}
                   />
                 </>
-              }
+              )}
             </View>
           </Card.Image>
           <Text 
-            style={[styles.cardDescription]}
+            style={[
+              styles.padding_height_10,
+              styles.padding_width_20,
+              styles.color_black
+            ]}
           >
             {dish.description}
           </Text>
-          {
-            Platform.OS === 'web' ?
-            <>
-            </>
-            :
+          {(
+            Platform.OS !== 'web' &&
             <Modal
               animationType='slide'
               transparent={false}
-              visible={modalVisible}
-              onDismiss={() => setModalVisible(false)}
-              onRequestClose={() => setModalVisible(false)}
+              visible={commentModal}
+              onDismiss={() => showCommentModal(false)}
+              onRequestClose={() => showCommentModal(false)}
             >
               <View
-                style={[styles.modal]}
+                style={[{
+                  justifyContent: 'center',
+                  padding: 20
+                }]}
               >
                 <Rating
                   showRating
@@ -211,20 +228,22 @@ function RenderDish(props) {
                 <Button
                   title='Submit'
                   color='#512DA8'
-                  onPress={() => handleComment()}
+                  onPress={() => postComment()}
                 />
                 <View
-                  style={[styles.mt_20]}
+                  style={[{
+                      marginTop: 20
+                  }]}
                 >
                   <Button
                     title='Cancel'
                     color='#512DA8'
-                    onPress={() => setModalVisible(false)}
+                    onPress={() => showCommentModal(false)}
                   />
                 </View>
               </View>
             </Modal>
-          }
+          )}
         </Card>
       </Animatable.View>
     )
@@ -235,34 +254,15 @@ function RenderDish(props) {
   }
 }
 
-function RenderComments(props) {
-  const renderComment = ({ item, index }) => {
-    return (
-      <View
-        key={index}
-        style={[styles.itemView]}
-      >
-        <Text
-          style={[styles.itemComment]}
-        >
-          {item.comment}
-        </Text>
-        <View
-          style={[styles.itemRatingContainer]}
-        >
-          <Rating
-            readonly
-            imageSize={12}
-            startingValue={item.rating}
-          />
-        </View>
-        <Text
-          style={[styles.itemDetails]}
-        >
-          {'-- ' + item.author + ', ' + item.date}  
-        </Text>  
-      </View>
-    )
+const RenderComments = (props) => {
+  const getDateTime = (datetime) => {
+    const dd = String(datetime.getDate()).padStart(2, '0')
+    const mm = String(datetime.getMonth() + 1).padStart(2, '0')
+    const yyyy = datetime.getFullYear()
+    const hh = String(datetime.getHours()).padStart(2, '0')
+    const MM = String(datetime.getMinutes()).padStart(2, '0')
+    const ss = String(datetime.getSeconds()).padStart(2, '0')
+    return dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + MM + ':' + ss
   }
 
   return (
@@ -272,118 +272,142 @@ function RenderComments(props) {
       delay={1000}
     >
       <Card
-        containerStyle={[styles.commentCard]}  
+        containerStyle={[
+          styles.margin_height_5,
+          styles.radius_10
+        ]}  
       >
-        <Card.Title>
+        <Card.Title
+          style={[styles.color_black]}
+        >
           Comments
         </Card.Title>
         <Card.Divider />
-        <FlatList
-          data={props.comments}
-          renderItem={renderComment}
-          keyExtractor={item => item.id.toString()}
-          style={[styles.commentCardDescription]}
-        />
+        {(
+          props.comments.map((item, index) => {
+            return (
+              <View
+                key={index}
+                style={[{
+                  margin: 10
+                }]}
+              >
+                <Text
+                  style={[
+                    {
+                      fontSize: 14
+                    },
+                    styles.color_black
+                  ]}
+                >
+                  {item.comment}
+                </Text>
+                <View
+                  style={[
+                    {
+                      alignItems: 'flex-start'
+                    },
+                    styles.margin_height_5
+                  ]}
+                >
+                  <Rating
+                    readonly
+                    imageSize={12}
+                    startingValue={item.rating}
+                  />
+                </View>
+                <Text
+                  style={[
+                    {
+                      fontSize: 12
+                    },
+                    styles.color_black
+                  ]}
+                >
+                  {'-- ' + item.author + ', ' + getDateTime(new Date(Date.parse(item.date)))}  
+                </Text>  
+              </View>
+            )
+          })
+        )}
       </Card>
     </Animatable.View>
   )
 }
 
-class DishDetail extends Component {
-  render() {
-    const dishId = this.props.route.params.dishId
-    return (
-      <ScrollView
-        style={[styles.container]}
-      >
-        <RenderDish 
-          dish={this.props.dishes.dishes[+dishId]}
-          favorite={this.props.favorites.some(el => el === dishId)}
-          markFavorite={() => this.props.postFavorite(dishId)}
-          unMarkFavorite={() => this.props.deleteFavorite(dishId)}
-          postComment={(author, rating, comment) => this.props.postComment(dishId, author, rating, comment)}
-        />
-        <RenderComments 
-          comments={this.props.comments.comments.filter(comment => comment.dishId === +dishId)} 
-        />
-      </ScrollView>
-    )
-  }
+const DishDetail = (props) => {
+  const dishId = props.route.params.dishId
+  return (
+    <ScrollView
+      contentContainerStyle={[styles.padding_height_5]}
+    >
+      <RenderDish 
+        dish={props.dishes.dishes[+dishId]}
+        favorite={props.favorites.some(el => el === dishId)}
+        postFavorite={() => props.postFavorite(dishId)}
+        deleteFavorite={() => props.deleteFavorite(dishId)}
+        postComment={(author, rating, comment) => props.postComment(dishId, author, rating, comment)}
+      />
+      <RenderComments 
+        comments={props.comments.comments.filter(comment => comment.dishId === +dishId)} 
+      />
+    </ScrollView>
+  )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  padding_height_5: {
     paddingTop: 5,
     paddingBottom: 5
   },
-  card: {
-    padding: 0, 
-    borderRadius: 10,
-    marginTop: 5,
-    marginBottom: 5
+  padding_width_5: {
+    paddingLeft: 5,
+    paddingRight: 5
   },
-  cardImage: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10
+  padding_height_10: {
+    paddingTop: 10,
+    paddingBottom: 10
   },
-  cardDescription: {
-    padding: 10,
-    paddingLeft: 20,
-    paddingRight: 20
-  },
-  commentCard: {
-    borderRadius: 10,
-    marginTop: 5,
-    marginBottom: 5
-  },
-  commentCardDescription: {
-    paddingBottom: 10,
+  padding_width_10: {
     paddingLeft: 10,
     paddingRight: 10
   },
-  itemView: {
-    margin: 10
+  padding_height_20: {
+    paddingTop: 20,
+    paddingBottom: 20
   },
-  itemComment: {
-    fontSize: 14
+  padding_width_20: {
+    paddingLeft: 20,
+    paddingRight: 20
   },
-  itemDetails: {
-    fontSize: 12
-  },
-  itemRatingContainer: {
-    alignItems : 'flex-start',
+  margin_height_5: {
     marginTop: 5,
     marginBottom: 5
   },
-  iconsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  icon: {
+  margin_width_5: {
     marginLeft: 5,
     marginRight: 5
   },
-  modal: {
+  margin_height_10: {
+    marginTop: 10,
+    marginBottom: 10
+  },
+  margin_width_10: {
+    marginLeft: 10,
+    marginRight: 10
+  },
+  radius_10: {
+    borderRadius: 10
+  },
+  color_black: {
+    color: 'black'
+  },
+  bold: {
+    fontWeight: 'bold'
+  },
+  items_in_center: {
     justifyContent: 'center',
-    margin: 20
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    backgroundColor: '#512DA8',
-    textAlign: 'center',
-    color: 'white',
-    marginBottom: 20
-  },
-  modalText: {
-    fontSize: 18,
-    margin: 10
-  },
-  mt_20: {
-    marginTop: 20
+    alignItems: 'center'
   }
 })
 

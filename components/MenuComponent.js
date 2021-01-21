@@ -1,11 +1,10 @@
-import React, { Component } from 'react'
-import { StyleSheet, View, Text, FlatList } from 'react-native'
+import React from 'react'
+import { View, Text, FlatList } from 'react-native'
 import { Tile } from 'react-native-elements'
 import { connect } from 'react-redux'
-import { baseUrl } from '../shared/baseUrl'
-import Loading from './LoadingComponent'
 import * as Animatable from 'react-native-animatable'
-import Animated from 'react-native-reanimated'
+import Loading from './LoadingComponent'
+import { baseUrl } from '../shared/baseUrl'
 
 const mapStateToProps = state => {
   return {
@@ -13,58 +12,46 @@ const mapStateToProps = state => {
   }
 }
 
-class Menu extends Component {
-  render() {
-    const navigation = this.props.navigation
-    const renderMenuItem = ({ item, index }) => {
-      return (
-        <Animatable.View
-          animation='fadeInRightBig'
-          duration={2000}
-        >
-          <Tile 
-            key={index} 
-            title={item.name}
-            caption={item.description}
-            featured
-            onPress={() => navigation.navigate( 'Dish', { dishId: item.id })}
-            imageSrc={{ uri: baseUrl + item.image }}
-          />
-        </Animatable.View>   
-      )
-    }
-
-    if(this.props.dishes.isLoading) {
-      return (
-        <Loading />
-      )
-    } else if(this.props.dishes.errMess) {
-      return (
-        <View>
-          <Text>
-            {this.props.dishes.errMess}
-          </Text>
-        </View>
-      )
-    } else {
-      return (
-        <FlatList 
-          data={this.props.dishes.dishes} 
-          renderItem={renderMenuItem} 
-          keyExtractor={item => item.id.toString()} 
+const Menu = (props) => {
+  const MenuItem = ({ item, index }) => {
+    return (
+      <Animatable.View
+        animation='fadeInRightBig'
+        duration={2000}
+      >
+        <Tile 
+          featured
+          key={index} 
+          title={item.name}
+          caption={item.description}
+          onPress={() => props.navigation.navigate( 'Dish', { dishId: item.id })}
+          imageSrc={{ uri: baseUrl + item.image }}
         />
-      )
-    }
+      </Animatable.View>   
+    )
+  }
+
+  if(props.dishes.isLoading) {
+    return (
+      <Loading />
+    )
+  } else if(props.dishes.errMess) {
+    return (
+      <View>
+        <Text>
+          {props.dishes.errMess}
+        </Text>
+      </View>
+    )
+  } else {
+    return (
+      <FlatList 
+        data={props.dishes.dishes} 
+        renderItem={MenuItem} 
+        keyExtractor={item => item.id.toString()} 
+      />
+    )
   }
 }
-
-const styles = StyleSheet.create({
-  listItemTitle: {
-    fontWeight: 'bold'
-  },
-  listItemSubtitle: {
-    color: '#000' 
-  }
-})
 
 export default connect(mapStateToProps)(Menu)
